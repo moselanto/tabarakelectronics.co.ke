@@ -2,6 +2,14 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Core 1.12.0 - Funnel refinements (2026-10-06)
+
+- **Accessories kept out of auto-picked deals.** Each funnel has a price floor and a list of skip words. Televisions skip products under KSh 8,000 and names containing remote, mount, bracket, cable or stand, and the other funnels have their own. This fixes the TV funnel showing a remote control as "Top pick" and "From KSh 1,800". Both settings can be edited under Tabarak > Sales Funnels, and products you pick yourself are always shown.
+- **Hero spotlight.** The right side of the hero now shows the Top pick product (big photo, brand, price, savings and an *Order now* button that opens the order form) instead of a 3-photo collage. A custom hero image still overrides it.
+- **Budget cards filter the deals in place.** Each card shows how many of today's deals fit. Tapping one filters the grid without leaving the page, with a *Show all* button and a *More in this budget* link. Budgets with no deals on the page still open the filtered category.
+- **Desktop floating "Ask on WhatsApp" button** opens the order form. The theme's floating button is hidden on funnels, so nothing overlaps the reCAPTCHA badge.
+- Cleaner line breaks in headings and titles.
+
 ## Tabarak Core 1.11.0 - WhatsApp order form for funnels (2026-10-06)
 
 - Every *Order on WhatsApp* button on the funnels now opens a polished order form (a centred modal on desktop, a bottom sheet on mobile). It shows the product photo, brand, price and a quantity stepper. The customer enters their name, Kenyan phone number (validated, e.g. 0712 345 678), delivery area (19 Nairobi areas and towns), estate or street, delivery or shop pickup, payment method (M-Pesa on delivery, M-Pesa now, cash, bank) and installation, plus an optional note.

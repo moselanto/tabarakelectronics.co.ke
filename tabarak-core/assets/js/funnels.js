@@ -322,3 +322,53 @@
     });
   });
 })();
+
+/* v1.12.0: budget cards filter the deals grid in place */
+(function () {
+  'use strict';
+  var cards = [].slice.call(document.querySelectorAll('.tf-grid .tf-card'));
+  var bar = document.querySelector('.tf-filterbar');
+  var items = [].slice.call(document.querySelectorAll('.tf-budget__item[data-min]'));
+  var picks = document.getElementById('tf-picks');
+  if (!cards.length || !bar || !items.length) { return; }
+
+  function inBand(price, min, max) {
+    if (!price) { return false; }
+    return price >= min && (max <= 0 || price <= max);
+  }
+  // Show how many of today's deals sit in each budget
+  items.forEach(function (it) {
+    var min = parseFloat(it.getAttribute('data-min')) || 0, max = parseFloat(it.getAttribute('data-max')) || 0;
+    var n = cards.filter(function (c) { return inBand(parseFloat(c.getAttribute('data-price')), min, max); }).length;
+    it.setAttribute('data-count', n);
+    if (n > 0) {
+      var em = document.createElement('em');
+      em.textContent = n + (n === 1 ? ' deal' : ' deals');
+      it.appendChild(em);
+    }
+  });
+
+  function clear() {
+    cards.forEach(function (c) { c.classList.remove('is-hidden'); });
+    items.forEach(function (i) { i.classList.remove('is-active'); });
+    bar.hidden = true;
+  }
+
+  items.forEach(function (it) {
+    it.addEventListener('click', function (e) {
+      var n = parseInt(it.getAttribute('data-count'), 10) || 0;
+      if (!n) { return; } // nothing on this page: follow the link to the category
+      e.preventDefault();
+      if (it.classList.contains('is-active')) { clear(); return; }
+      var min = parseFloat(it.getAttribute('data-min')) || 0, max = parseFloat(it.getAttribute('data-max')) || 0;
+      cards.forEach(function (c) { c.classList.toggle('is-hidden', !inBand(parseFloat(c.getAttribute('data-price')), min, max)); });
+      items.forEach(function (i) { i.classList.toggle('is-active', i === it); });
+      bar.hidden = false;
+      bar.querySelector('.tf-filterbar__label').textContent = it.getAttribute('data-label');
+      bar.querySelector('.tf-filterbar__count').textContent = '(' + n + (n === 1 ? ' deal)' : ' deals)');
+      bar.querySelector('.tf-filterbar__more').href = it.href;
+      if (picks) { picks.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+  bar.querySelector('.tf-filterbar__clear').addEventListener('click', clear);
+})();

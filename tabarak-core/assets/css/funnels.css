@@ -309,3 +309,55 @@ html[data-theme="dark"] .tf-sum,html[data-theme="dark"] .tf-opt span,html[data-t
 html[data-theme="dark"] .tf-f label,html[data-theme="dark"] .tf-choice legend,html[data-theme="dark"] .tf-check{color:#c9ced8;}
 html[data-theme="dark"] .tf-modal__close{background:#1c222c;color:#fff;}
 html[data-theme="dark"] .tf-phone span{background:#0e1116;border-color:#2a313d;}
+
+/* =====================================================================
+   v1.12.0 refinements: hero spotlight, in-page budget filter, desktop fab
+   ===================================================================== */
+/* Hero spotlight card */
+.tf-spot{position:relative;background:#fff;color:#0e1116;border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45);display:grid;grid-template-columns:1fr;}
+.tf-spot__tag{position:absolute;z-index:2;right:14px;top:14px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:#0e1116;color:#fff;font-size:12px;font-weight:800;}
+.tf-spot__tag .tf-ic{width:14px;height:14px;color:var(--tf-accent);fill:var(--tf-accent);}
+.tf-spot__media{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;padding:22px;background:radial-gradient(70% 70% at 50% 45%,#fff 0%,#f2f4f7 100%);}
+.tf-spot__media img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;transition:transform .35s ease;}
+.tf-spot:hover .tf-spot__media img{transform:scale(1.03);}
+.tf-spot__body{padding:16px 18px 18px;border-top:1px solid #eef0f3;display:flex;flex-direction:column;gap:6px;}
+.tf-spot__name{color:#0e1116;font-weight:800;font-size:16px;line-height:1.3;text-decoration:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.tf-spot__row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:4px;}
+.tf-spot__price{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;}
+.tf-spot__price strong{font-size:24px;font-weight:900;}
+.tf-spot__price del{color:#8a93a1;font-size:14px;}
+.tf-spot__save{font-size:12.5px;font-weight:800;color:#fff;background:#e5484d;border-radius:999px;padding:3px 9px;}
+.tf-spot .tf-btn{min-height:48px;}
+.tf-from{z-index:3;}
+@media (min-width:900px){ .tf-spot{max-width:500px;margin-left:auto;} }
+@media (max-width:899px){ .tf-hero__media{margin-top:6px;} .tf-from{left:8px;top:-14px;} }
+
+/* Budget filter */
+.tf-budget__item.is-active{border-color:#0e1116;background:#0e1116;color:#fff;}
+.tf-budget__item.is-active small{color:#c3c9d3;}
+.tf-budget__item.is-active .tf-ic{color:var(--tf-accent);}
+.tf-budget__item em{font-style:normal;font-size:12px;font-weight:700;color:#137a3a;}
+.tf-budget__item.is-active em{color:#3ee07f;}
+.tf-filterbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 16px;padding:12px 16px;border-radius:14px;background:#fff7e6;border:1px solid #ffe2a8;font-size:14px;}
+.tf-filterbar[hidden]{display:none;}
+.tf-filterbar em{font-style:normal;color:#5e6675;}
+.tf-filterbar__clear{border:0;background:#0e1116;color:#fff;font-weight:800;font-size:13px;padding:7px 14px;border-radius:999px;cursor:pointer;}
+.tf-filterbar__more{margin-left:auto;font-weight:800;color:#a8660a;text-decoration:none;}
+.tf-card.is-hidden{display:none;}
+
+/* Desktop floating WhatsApp (replaces the theme button on funnels) */
+body.tabarak-funnel .tabarak-fab--whatsapp{display:none !important;}
+.tf-fab{position:fixed;left:20px;bottom:20px;z-index:950;display:none;align-items:center;gap:10px;padding:13px 20px 13px 16px;border-radius:999px;background:#25D366;color:#06341a;font-weight:900;text-decoration:none;box-shadow:0 14px 34px rgba(18,140,74,.4);transition:transform .15s ease;}
+.tf-fab:hover{transform:translateY(-2px);color:#06341a;}
+.tf-fab .tf-ic{width:22px;height:22px;}
+@media (min-width:768px){ .tf-fab{display:inline-flex;} }
+
+/* Small polish */
+.tf-hero__title{text-wrap:balance;}
+.tf-h2{text-wrap:balance;}
+.tf-card__title{text-wrap:pretty;}
+.tf-trust__grid > div{padding:4px 0;}
+html[data-theme="dark"] .tf-spot,html[data-theme="dark"] .tf-spot__body{background:#171b22;color:#e7e9ee;border-color:#252c38;}
+html[data-theme="dark"] .tf-spot__name{color:#fff;}
+html[data-theme="dark"] .tf-spot__media{background:#fff;}
+html[data-theme="dark"] .tf-filterbar{background:#1f1a10;border-color:#4a3a14;color:#e7e9ee;}
