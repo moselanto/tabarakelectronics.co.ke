@@ -1,0 +1,65 @@
+# ============================================================
+# Tabarak Electronics Kenya - robots.txt
+# Upload to the DOMAIN ROOT so crawlers can read it:
+#   https://tabarakelectronics.co.ke/robots.txt
+# (Crawlers only read robots.txt from the domain root.)
+# A physical robots.txt overrides RankMath's virtual one.
+# If you prefer, paste the rules below into
+#   RankMath -> General Settings -> Edit robots.txt  (leave no physical file then).
+# ============================================================
+
+# --- AI / scraper bots (remove any you WANT to allow) ---
+User-agent: GPTBot
+Disallow: /
+User-agent: ClaudeBot
+Disallow: /
+User-agent: CCBot
+Disallow: /
+User-agent: Bytespider
+Disallow: /
+User-agent: PetalBot
+Disallow: /
+User-agent: meta-externalagent
+Disallow: /
+User-agent: Amazonbot
+Disallow: /
+User-agent: MJ12bot
+Disallow: /
+User-agent: DotBot
+Disallow: /
+User-agent: DataForSeoBot
+Disallow: /
+
+# --- All search engines (Google, Bing, etc.) ---
+User-agent: *
+Allow: /
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+Disallow: /wp-login.php
+Disallow: /xmlrpc.php
+Disallow: /wp-includes/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
+Disallow: /*?add-to-cart=
+Disallow: /*?orderby=
+Disallow: /*?tab_brand=
+Disallow: /*?tab_min=
+Disallow: /*?tab_max=
+Disallow: /*?tab_instock=
+Disallow: /*?s=
+Disallow: /*?author=
+Disallow: /*?p=
+Disallow: /*?replytocom=
+
+# Let crawlers fetch CSS/JS/images so pages render for ranking
+Allow: /wp-content/uploads/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+
+Sitemap: https://tabarakelectronics.co.ke/sitemap_index.xml

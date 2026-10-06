@@ -1,0 +1,109 @@
+# =====================================================================
+# Tabarak Electronics Kenya - security + performance .htaccess block
+# ---------------------------------------------------------------------
+# HOW TO USE:
+#   1. Back up your current .htaccess first (download a copy).
+#   2. Edit the site .htaccess:  .../public_html/.htaccess
+#   3. Paste this ENTIRE block at the very TOP, ABOVE "# BEGIN WordPress".
+#      Do NOT touch anything between "# BEGIN WordPress" and "# END WordPress".
+#   4. Save, reload the site. If anything breaks, restore your backup.
+#   Works on Apache and LiteSpeed. (Your host runs LiteSpeed - fine.)
+# =====================================================================
+
+# --- Block direct access to sensitive files -------------------------
+<FilesMatch "^\.(htaccess|htpasswd)$">
+  Require all denied
+</FilesMatch>
+<Files wp-config.php>
+  Require all denied
+</Files>
+<Files xmlrpc.php>
+  Require all denied
+</Files>
+<FilesMatch "^(readme\.html|license\.txt|wp-config-sample\.php|install\.php|debug\.log)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "(?i)\.(bak|old|orig|save|swp|swo|sql|log|ini|env|tar|gz|zip)$">
+  Require all denied
+</FilesMatch>
+
+# --- Disable directory browsing -------------------------------------
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Block cross-site tracing
+  RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
+  RewriteRule ^ - [F,L]
+
+  # Hard-block scrapers / aggressive crawlers that ignore robots.txt
+  RewriteCond %{HTTP_USER_AGENT} (GPTBot|ClaudeBot|CCBot|Bytespider|PetalBot|meta-externalagent|MJ12bot|AhrefsBot|SemrushBot|DotBot|Baiduspider|Sogou|SeznamBot|Amazonbot|DataForSeoBot|ZoominfoBot|serpstatbot|BLEXBot) [NC]
+  RewriteRule ^ - [F,L]
+
+  # Block brute-force bots hitting login/xmlrpc with an empty user-agent
+  RewriteCond %{HTTP_USER_AGENT} ^-?$
+  RewriteCond %{REQUEST_URI} (wp-login\.php|xmlrpc\.php) [NC]
+  RewriteRule ^ - [F,L]
+
+  # Stop author/username enumeration via ?author=N
+  RewriteCond %{QUERY_STRING} (^|&)author=\d [NC]
+  RewriteRule ^ /? [L,R=301]
+
+  # Block obvious exploit strings in the query string
+  RewriteCond %{QUERY_STRING} (\.\./|\.\.%2f|etc/passwd|boot\.ini|base64_(en|de)code|<script|%3Cscript) [NC,OR]
+  RewriteCond %{QUERY_STRING} (GLOBALS(=|\[|%5B)|_REQUEST(=|\[|%5B)) [NC]
+  RewriteRule ^ - [F,L]
+
+  # Block spam bots POSTing to comments from off-site or with no referer
+  RewriteCond %{REQUEST_METHOD} POST
+  RewriteCond %{REQUEST_URI} wp-comments-post\.php [NC]
+  RewriteCond %{HTTP_REFERER} !^https?://([^/]+\.)?tabarakelectronics\.co\.ke [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^$
+  RewriteRule ^ - [F,L]
+
+  # Protect wp-includes internals (leave wp-tinymce + ms-files working)
+  RewriteRule ^wp-admin/includes/ - [F,L]
+  RewriteRule !^wp-includes/ - [S=3]
+  RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
+  RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
+  RewriteRule ^wp-includes/theme-compat/ - [F,L]
+</IfModule>
+
+# --- Security response headers --------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header always set X-XSS-Protection "1; mode=block"
+  # Enable HSTS ONLY after the whole site is confirmed on HTTPS:
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# --- Gzip / compression ---------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css
+  AddOutputFilterByType DEFLATE application/xml application/xhtml+xml application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# --- Browser caching (static assets) --------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresDefault "access plus 2 days"
+</IfModule>
+
+# --- Limit access to wp-login.php by referer-less POST flood (soft) --
+# For real login rate-limiting, use the Cloudflare rule in the setup guide.
