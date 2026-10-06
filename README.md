@@ -1,29 +1,51 @@
 <div align="center">
 
-<img src="tabarak-electronics-child/assets/images/logo.png" alt="Tabarak Electronics" width="240">
+<img src="docs/images/banner.jpg" alt="Tabarak Electronics Kenya - WordPress and WooCommerce electronics store" width="100%">
 
-# Tabarak Electronics Kenya
+<br>
+
+<img src="https://img.shields.io/badge/WordPress-6.2%2B-21759B?style=for-the-badge&logo=wordpress&logoColor=white" alt="WordPress">
+<img src="https://img.shields.io/badge/WooCommerce-8%2B-96588A?style=for-the-badge&logo=woocommerce&logoColor=white" alt="WooCommerce">
+<img src="https://img.shields.io/badge/PHP-7.4%E2%80%938.3-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+<img src="https://img.shields.io/badge/Status-Live-2ea44f?style=for-the-badge" alt="Live">
+
+<img src="https://img.shields.io/badge/Theme-v1.2.1-0e1116?style=flat-square" alt="Theme">
+<img src="https://img.shields.io/badge/Child%20theme-v1.10.1-f7a81b?style=flat-square" alt="Child theme">
+<img src="https://img.shields.io/badge/Tabarak%20Core-v1.9.1-a8660a?style=flat-square" alt="Plugin">
+<img src="https://img.shields.io/badge/License-GPLv2%2B-blue?style=flat-square" alt="License">
 
 ### Custom WordPress + WooCommerce platform for [tabarakelectronics.co.ke](https://tabarakelectronics.co.ke/)
 
-A fast, mobile-first electronics and home-appliance store for Nairobi and the rest of Kenya, with more than 2,000 products across TVs, refrigerators, cookers, washing machines, audio and small kitchen appliances. It is built on one parent theme, one child theme and one companion plugin.
+A fast, mobile-first electronics and home-appliance store for Nairobi and the rest of Kenya, with more than 2,000 products across TVs, refrigerators, cookers, washing machines, audio and small kitchen appliances.
 
-\![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759B?logo=wordpress&logoColor=white)
-\![WooCommerce](https://img.shields.io/badge/WooCommerce-8%2B-96588A?logo=woocommerce&logoColor=white)
-\![PHP](https://img.shields.io/badge/PHP-7.4%E2%80%938.3-777BB4?logo=php&logoColor=white)
-\![Theme](https://img.shields.io/badge/Theme-v1.2.1-0e1116)
-\![Child](https://img.shields.io/badge/Child%20theme-v1.10.1-f7a81b)
-\![Plugin](https://img.shields.io/badge/Tabarak%20Core-v1.9.1-a8660a)
-\![License](https://img.shields.io/badge/License-GPLv2%2B-blue)
-\![Status](https://img.shields.io/badge/Status-Live-brightgreen)
-
-[Live site](https://tabarakelectronics.co.ke/) · [Shop](https://tabarakelectronics.co.ke/shop/) · [Delivery & Installation](https://tabarakelectronics.co.ke/delivery-installation/) · [Installation guide](tabarak-electronics/INSTALLATION-GUIDE.md) · [Child theme docs](tabarak-electronics-child/README.md) · [Changelog](CHANGELOG.md)
+[**Live site**](https://tabarakelectronics.co.ke/) &nbsp;·&nbsp; [**Shop**](https://tabarakelectronics.co.ke/shop/) &nbsp;·&nbsp; [Delivery & Installation](https://tabarakelectronics.co.ke/delivery-installation/) &nbsp;·&nbsp; [Installation guide](tabarak-electronics/INSTALLATION-GUIDE.md) &nbsp;·&nbsp; [Child theme docs](tabarak-electronics-child/README.md) &nbsp;·&nbsp; [Changelog](CHANGELOG.md)
 
 </div>
 
 ---
 
-\![Tabarak Electronics homepage](docs/screenshots/home-desktop.jpg)
+<table>
+  <tr>
+    <td align="center" width="25%"><h3>2,000+</h3><sub>products online</sub></td>
+    <td align="center" width="25%"><h3>24+</h3><sub>trusted brands</sub></td>
+    <td align="center" width="25%"><h3>30+</h3><sub>product categories</sub></td>
+    <td align="center" width="25%"><h3>3</h3><sub>packages: parent, child, plugin</sub></td>
+  </tr>
+</table>
+
+## Table of contents
+
+- [Overview](#overview)
+- [Screenshots](#screenshots)
+- [Homepage hero slides](#homepage-hero-slides)
+- [What customers can shop](#what-customers-can-shop)
+- [Key features](#key-features)
+- [Architecture](#architecture)
+- [Project structure](#project-structure)
+- [Requirements](#requirements) and [Installation](#installation)
+- [Configuration without code](#configuration-without-code)
+- [Brand design system](#brand-design-system)
+- [Extending](#extending) and [Troubleshooting](#troubleshooting)
 
 ## Overview
 
@@ -39,24 +61,47 @@ Tabarak Electronics is a home-appliance and electronics retailer based at Nairob
 
 ## Screenshots
 
-| Shop with brand, price and stock filters | Category page with hero banner |
-| --- | --- |
-| \![Shop page](docs/screenshots/shop-desktop.jpg) | \![Microwaves category](docs/screenshots/category-desktop.jpg) |
+<p align="center">
+  <img src="docs/screenshots/home-desktop.jpg" alt="Homepage with category sidebar, hero slider and trust strip" width="100%">
+  <br><sub><b>Homepage</b> - category sidebar with live counts, hero slider and trust strip</sub>
+</p>
 
-| Product page with WhatsApp ordering and trust panel | Mobile homepage |
-| --- | --- |
-| \![Product page](docs/screenshots/product-desktop.jpg) | <p align="center"><img src="docs/screenshots/home-mobile.jpg" alt="Mobile homepage with bottom navigation" width="280"></p> |
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/shop-desktop.jpg" alt="Shop page with filters" width="100%"><br>
+      <sub><b>Shop</b> - stock, price and brand filters over 2,294 products</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/category-desktop.jpg" alt="Microwaves category page" width="100%"><br>
+      <sub><b>Category</b> - hero banner with product count and brand filter</sub>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="docs/screenshots/product-desktop.jpg" alt="Product page" width="80%"><br>
+      <sub><b>Product page</b> - <i>Order on WhatsApp</i>, trust panel and sale badge</sub>
+    </td>
+  </tr>
+</table>
 
-<sub>Screenshots taken from the live site in October 2026.</sub>
+### Mobile experience
+
+<p align="center">
+  <img src="docs/screenshots/mobile-showcase.jpg" alt="Mobile homepage, shop and product page" width="90%">
+  <br><sub>Mobile-first design with bottom navigation, <i>All Categories</i> drawer, filters and a floating WhatsApp button</sub>
+</p>
+
+<sub>Screenshots taken from the live site on 6 October 2026.</sub>
 
 ## Homepage hero slides
 
 <table>
   <tr>
-    <td align="center"><img src="tabarak-electronics-child/assets/images/hero-1.jpg" width="200" alt="Televisions"><br><sub>Big screens, bigger savings</sub></td>
-    <td align="center"><img src="tabarak-electronics-child/assets/images/hero-2.jpg" width="200" alt="Refrigerators"><br><sub>Keep it cool, keep it fresh</sub></td>
-    <td align="center"><img src="tabarak-electronics-child/assets/images/hero-3.jpg" width="200" alt="Laundry"><br><sub>Laundry made easy</sub></td>
-    <td align="center"><img src="tabarak-electronics-child/assets/images/hero-4.jpg" width="200" alt="Kitchen"><br><sub>Cook and blend in style</sub></td>
+    <td align="center" width="25%"><img src="tabarak-electronics-child/assets/images/hero-1.jpg" width="100%" alt="Televisions"><br><sub>Big screens, bigger savings</sub></td>
+    <td align="center" width="25%"><img src="tabarak-electronics-child/assets/images/hero-2.jpg" width="100%" alt="Refrigerators"><br><sub>Keep it cool, keep it fresh</sub></td>
+    <td align="center" width="25%"><img src="tabarak-electronics-child/assets/images/hero-3.jpg" width="100%" alt="Laundry"><br><sub>Laundry made easy</sub></td>
+    <td align="center" width="25%"><img src="tabarak-electronics-child/assets/images/hero-4.jpg" width="100%" alt="Kitchen"><br><sub>Cook and blend in style</sub></td>
   </tr>
 </table>
 
@@ -112,69 +157,93 @@ Each slide's image, title, subtitle and button link can be replaced under **Appe
 ### How the three packages fit together
 
 ```mermaid
-flowchart TB
-    subgraph Browser["Customer (mobile and desktop)"]
-        V[Visitor]
-    end
+flowchart LR
+    U(["Customer<br/>mobile and desktop"]):::user
 
-    subgraph WP["WordPress 6.2+"]
+    subgraph PRES["Presentation layer"]
         direction TB
-        subgraph Themes["Presentation layer"]
-            C["Tabarak Electronics Child<br/>(active theme)<br/>hero, rails, filters, search,<br/>product cards, WhatsApp, dark mode"]
-            P["Tabarak Electronics<br/>(parent theme)<br/>layout, header/footer,<br/>Customizer, WC wrappers"]
-            C -- inherits templates and styles --> P
-        end
-        subgraph Logic["Business layer"]
-            K["Tabarak Core plugin<br/>business info, brands, schema,<br/>shortcodes, checkout, wizard,<br/>hardening, anti-spam"]
-        end
-        WC["WooCommerce<br/>products, cart, checkout, orders"]
-        DB[("MySQL<br/>products, orders,<br/>brands, options")]
+        C["Tabarak Electronics Child<br/><i>active theme</i><br/>hero, rails, filters, search,<br/>product cards, WhatsApp, dark mode"]:::child
+        P["Tabarak Electronics<br/><i>parent theme</i><br/>layout, header and footer,<br/>Customizer, WooCommerce wrappers"]:::parent
+        C -- inherits --> P
     end
 
-    WA["WhatsApp<br/>wa.me order links"]
-    PAY["M-Pesa / bank transfer / cash"]
+    subgraph BIZ["Business layer"]
+        direction TB
+        K["Tabarak Core plugin<br/>business info, brands, schema,<br/>shortcodes, checkout, wizard,<br/>hardening, anti-spam"]:::core
+        WC["WooCommerce<br/>products, cart, checkout, orders"]:::wc
+    end
 
-    V --> C
+    DB[("MySQL")]:::db
+    WA["WhatsApp<br/>order links"]:::ext
+    PAY["M-Pesa, bank,<br/>cash on delivery"]:::ext
+
+    U --> C
     C --> WC
-    K -- tabarak_business_info filter --> C
-    K -- tabarak_brand taxonomy --> WC
+    K -- business info --> C
+    K -- brand taxonomy --> WC
     WC --> DB
     K --> DB
     C -- Order on WhatsApp --> WA
     WC --> PAY
+
+    classDef user fill:#f7a81b,stroke:#a8660a,color:#0e1116,font-weight:bold
+    classDef child fill:#0e1116,stroke:#f7a81b,stroke-width:2px,color:#ffffff
+    classDef parent fill:#171b22,stroke:#5e6675,color:#ffffff
+    classDef core fill:#a8660a,stroke:#0e1116,color:#ffffff
+    classDef wc fill:#96588a,stroke:#5b3355,color:#ffffff
+    classDef db fill:#f5f6f9,stroke:#5e6675,color:#0e1116
+    classDef ext fill:#25d366,stroke:#128c7e,color:#0e1116
 ```
 
 ### Request flow for the homepage
 
 ```mermaid
 sequenceDiagram
-    participant U as Customer
+    autonumber
+    actor U as Customer
     participant WP as WordPress
     participant CH as Child theme
-    participant PT as Parent theme
     participant WC as WooCommerce
     participant TC as Tabarak Core
 
-    U->>WP: GET /
-    WP->>CH: front-page.php (child overrides parent)
-    CH->>TC: tabarak_business_info (phone, hours, WhatsApp)
-    CH->>WC: WP_Query for category rails and brands
-    Note over CH,WC: Rows are cached and rebuilt on Customizer save
-    CH->>PT: header/footer helpers, base CSS (tabarak-main)
-    TC-->>WP: JSON-LD schema in wp_head
-    WP-->>U: HTML + main.css + child style.css + shop.js
-    U->>WP: AJAX tabarak_search (nonce)
-    WP-->>U: Product, category and brand matches
+    U->>WP: Open tabarakelectronics.co.ke
+    WP->>CH: Load front-page.php (child overrides parent)
+    CH->>TC: Get business info (phone, hours, WhatsApp)
+    CH->>WC: Query categories, products and brands
+    Note over CH,WC: Homepage rows are cached and rebuilt on Customizer save
+    TC-->>WP: Add JSON-LD schema to the page head
+    WP-->>U: Page, main.css, child style.css and shop.js
+    U->>WP: Type in search (AJAX with nonce)
+    WP-->>U: Matching products, categories and brands
+```
+
+### Customer journey
+
+```mermaid
+flowchart LR
+    A[Browse or search]:::s --> B[Filter by brand, price, stock]:::s --> C[Product page]:::s
+    C --> D{How to order?}:::d
+    D -- Add to cart --> E[Checkout<br/>M-Pesa, bank, cash]:::s
+    D -- WhatsApp --> F[Chat with sales team]:::w
+    E --> G[Call or WhatsApp confirmation]:::s
+    F --> G
+    G --> H[Delivery and installation]:::ok
+
+    classDef s fill:#171b22,stroke:#f7a81b,color:#ffffff
+    classDef d fill:#f7a81b,stroke:#a8660a,color:#0e1116
+    classDef w fill:#25d366,stroke:#128c7e,color:#0e1116
+    classDef ok fill:#2ea44f,stroke:#1a7f37,color:#ffffff
 ```
 
 ### Asset loading order
 
-```mermaid
-flowchart LR
-    A["parent: assets/css/main.css<br/>handle tabarak-main"] --> B["child: style.css<br/>handle tabarak-child"]
-    B --> C["inline mobile overrides"]
-    D["parent: assets/js/main.js"] --> E["child: assets/js/shop.js<br/>search, slider, filters, recent items"]
-```
+| Order | File | Handle | Purpose |
+| :---: | --- | --- | --- |
+| 1 | `tabarak-electronics/assets/css/main.css` | `tabarak-main` | Parent design system and base components |
+| 2 | `tabarak-electronics-child/style.css` | `tabarak-child` | Child storefront styles (loads after the parent) |
+| 3 | Inline CSS | `tabarak-child` | Mobile overrides |
+| 4 | `tabarak-electronics/assets/js/main.js` | `tabarak-main` | Mobile menu and back-to-top |
+| 5 | `tabarak-electronics-child/assets/js/shop.js` | | Live search, hero slider, filters, recently viewed |
 
 ## Project structure
 
@@ -183,7 +252,8 @@ flowchart LR
 ├── README.md                       # You are here
 ├── CHANGELOG.md                    # Release notes for all three packages
 ├── docs/
-│   └── screenshots/                # README images taken from the live site
+│   ├── images/                     # README banner and colour palette
+│   └── screenshots/                # Framed screenshots from the live site
 ├── tabarak-electronics/            # Parent theme
 │   ├── assets/
 │   │   ├── css/main.css            # Design system and base components
@@ -262,15 +332,21 @@ Full guide: [INSTALLATION-GUIDE.md](tabarak-electronics/INSTALLATION-GUIDE.md)
 | **Appearance > Customize > Colors** | Accent colour (default `#f7a81b`) |
 | **Products > Brands** | Brand names and logos |
 
-### Design tokens
+## Brand design system
+
+<p align="center"><img src="docs/images/palette.png" alt="Tabarak colour palette" width="90%"></p>
 
 | Token | Value | Use |
 | --- | --- | --- |
 | `--t-accent` | `#f7a81b` | Buttons, highlights, badges |
+| `--t-accent-2` | `#ffbf3f` | Hover states |
 | `--t-dark` | `#0e1116` | Header, hero and footer background |
 | `--t-muted` | `#5e6675` | Secondary text |
 | `--t-bg` | `#f5f6f9` | Section backgrounds |
 | `--t-radius` | `14px` | Cards and panels |
+| `--t-max` | `1220px` | Content width |
+
+Typography uses the system font stack, so pages load with no web-font requests.
 
 ## Extending
 
@@ -298,6 +374,9 @@ Every theme function is wrapped in `function_exists()`, so you can redefine any 
 | Changes on GitHub are not on the site | Upload the updated folder to hosting (see the deployment note) |
 
 ## Business
+
+<img src="tabarak-electronics-child/assets/images/logo.png" alt="Tabarak Electronics" width="160">
+
 
 **Tabarak Electronics Kenya**
 Nairobi Sky Mall Building, Luthuli Street, Nairobi Central, Kenya

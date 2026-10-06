@@ -2,6 +2,11 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## 2026-10-06 (README visuals)
+- Added a branded README banner, framed browser screenshots, a three-phone mobile showcase and a colour palette card.
+- Switched README images to HTML so they render reliably on GitHub, and added a stats bar and table of contents.
+- Styled the architecture diagrams in brand colours and added a customer-journey diagram and an asset-loading table.
+
 ## 2026-10-06
 
 ### Repository
