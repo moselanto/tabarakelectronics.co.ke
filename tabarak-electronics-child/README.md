@@ -6,7 +6,7 @@ The **active theme** on [tabarakelectronics.co.ke](https://tabarakelectronics.co
 
 | | |
 | --- | --- |
-| **Version** | 1.10.1 |
+| **Version** | 1.11.0 |
 | **Parent (Template)** | `tabarak-electronics` |
 | **Requires** | WordPress 6.2+, PHP 7.4+, WooCommerce 8+ |
 | **Text domain** | `tabarak-electronics-child` |

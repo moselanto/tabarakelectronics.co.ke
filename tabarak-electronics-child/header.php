@@ -80,20 +80,11 @@ $tabarak_hours = function_exists( 'tabarak_get_business' ) ? tabarak_get_busines
             </div>
         </div>
 
-        <nav id="site-navigation" class="main-navigation" role="navigation" aria-label="<?php esc_attr_e( 'Primary', 'tabarak-electronics-child' ); ?>">
-            <div class="tabarak-container">
-                <?php
-                wp_nav_menu(
-                    array(
-                        'theme_location' => 'primary',
-                        'menu_id'        => 'primary-menu',
-                        'container'      => false,
-                        'fallback_cb'    => 'tabarak_primary_menu_fallback',
-                    )
-                );
-                ?>
-            </div>
-        </nav>
+        <?php
+        if ( function_exists( 'tabarak_child_mega_nav' ) ) {
+            tabarak_child_mega_nav();
+        }
+        ?>
     </header>
 
 <div class="tabarak-drawer" id="tabarak-drawer" aria-hidden="true">
@@ -117,6 +108,9 @@ $tabarak_hours = function_exists( 'tabarak_get_business' ) ? tabarak_get_busines
             ?>
         </nav>
         <?php
+        if ( function_exists( 'tabarak_child_drawer_extras' ) ) {
+            tabarak_child_drawer_extras();
+        }
         if ( function_exists( 'wc_get_page_permalink' ) && taxonomy_exists( 'product_cat' ) ) :
             $tabarak_drawer_cats = get_terms(
                 array(

@@ -417,8 +417,10 @@ if ( ! function_exists( 'tabarak_child_trust_icons' ) ) {
 if ( ! function_exists( 'tabarak_child_footer_link' ) ) {
     function tabarak_child_footer_link( $slug, $label ) {
         $page = get_page_by_path( $slug );
-        if ( $page instanceof WP_Post ) {
+        if ( $page instanceof WP_Post && 'publish' === $page->post_status ) {
             printf( '<li><a href="%s">%s</a></li>', esc_url( get_permalink( $page ) ), esc_html( $label ) );
+        } elseif ( 'privacy-policy' === $slug && function_exists( 'get_privacy_policy_url' ) && get_privacy_policy_url() ) {
+            printf( '<li><a href="%s">%s</a></li>', esc_url( get_privacy_policy_url() ), esc_html( $label ) );
         }
     }
 }
@@ -1346,3 +1348,6 @@ if ( function_exists( 'tabarak_child_flush_home_rows' ) === false ) {
     }
 }
 add_action( 'customize_save_after', 'tabarak_child_flush_home_rows' );
+
+/* v1.11.0 UX layer: mega navigation, page templates, product page, cart and account polish. */
+require_once get_stylesheet_directory() . '/inc/ux.php';
