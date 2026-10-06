@@ -5,7 +5,7 @@
   var hero = document.querySelector('.tf-hero');
   if (bar && hero && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (en) {
-      bar.classList.toggle('is-visible', \!en[0].isIntersecting);
+      bar.classList.toggle('is-visible', !en[0].isIntersecting);
     }).observe(hero);
   }
   document.querySelectorAll('.tf a[href^="#"]').forEach(function (a) {

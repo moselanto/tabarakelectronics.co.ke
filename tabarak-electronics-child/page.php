@@ -6,7 +6,7 @@
  * @package Tabarak_Electronics_Child
  */
 
-if ( \! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
@@ -37,7 +37,7 @@ $tabarak_is_app = function_exists( 'tabarak_ux_is_wc_page' ) && tabarak_ux_is_wc
                     </div>
                 </div>
                 <?php
-                if ( \! $tabarak_is_app && function_exists( 'tabarak_ux_help_strip' ) ) {
+                if ( ! $tabarak_is_app && function_exists( 'tabarak_ux_help_strip' ) ) {
                     tabarak_ux_help_strip();
                 }
                 ?>

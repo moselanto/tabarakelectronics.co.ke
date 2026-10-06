@@ -5,7 +5,7 @@
  * @package Tabarak_Electronics_Child
  */
 
-if ( \! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 

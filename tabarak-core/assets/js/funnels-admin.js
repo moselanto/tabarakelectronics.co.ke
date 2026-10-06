@@ -9,7 +9,7 @@ jQuery(function ($) {
       var a = frame.state().get('selection').first().toJSON();
       $('.tf-image-url').val(a.url);
       var img = $('.tf-admin-img');
-      if (\!img.length) { img = $('<img class="tf-admin-img" alt="">').insertAfter($('.tf-image-pick').parent()); }
+      if (!img.length) { img = $('<img class="tf-admin-img" alt="">').insertAfter($('.tf-image-pick').parent()); }
       img.attr('src', a.url);
     });
     frame.open();

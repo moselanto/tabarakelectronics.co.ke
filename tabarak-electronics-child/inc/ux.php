@@ -17,14 +17,14 @@
  * @package Tabarak_Electronics_Child
  */
 
-if ( \! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /* ------------------------------------------------------------------
  * 1. Assets
  * ------------------------------------------------------------------ */
-if ( \! function_exists( 'tabarak_ux_assets' ) ) {
+if ( ! function_exists( 'tabarak_ux_assets' ) ) {
 	function tabarak_ux_assets() {
 		$ver = wp_get_theme()->get( 'Version' );
 		wp_enqueue_style( 'tabarak-ux', get_stylesheet_directory_uri() . '/assets/css/ux.css', array( 'tabarak-child' ), $ver );
@@ -48,7 +48,7 @@ add_action( 'wp_enqueue_scripts', 'tabarak_ux_assets', 30 );
  * ------------------------------------------------------------------ */
 
 /** Permalink of a published page by slug, or ''. */
-if ( \! function_exists( 'tabarak_ux_page_url' ) ) {
+if ( ! function_exists( 'tabarak_ux_page_url' ) ) {
 	function tabarak_ux_page_url( $slug ) {
 		$page = get_page_by_path( $slug );
 		if ( $page instanceof WP_Post && 'publish' === $page->post_status ) {
@@ -59,9 +59,9 @@ if ( \! function_exists( 'tabarak_ux_page_url' ) ) {
 }
 
 /** First matching product category link for a list of candidate names. */
-if ( \! function_exists( 'tabarak_ux_cat_url' ) ) {
+if ( ! function_exists( 'tabarak_ux_cat_url' ) ) {
 	function tabarak_ux_cat_url( $names ) {
-		if ( \! taxonomy_exists( 'product_cat' ) || \! function_exists( 'tabarak_child_resolve_term_ids' ) ) {
+		if ( ! taxonomy_exists( 'product_cat' ) || ! function_exists( 'tabarak_child_resolve_term_ids' ) ) {
 			return '';
 		}
 		$ids = tabarak_child_resolve_term_ids( (array) $names );
@@ -74,14 +74,14 @@ if ( \! function_exists( 'tabarak_ux_cat_url' ) ) {
 }
 
 /** Shop URL. */
-if ( \! function_exists( 'tabarak_ux_shop_url' ) ) {
+if ( ! function_exists( 'tabarak_ux_shop_url' ) ) {
 	function tabarak_ux_shop_url() {
 		return function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
 	}
 }
 
 /** Inline SVG icons used by the UX layer. */
-if ( \! function_exists( 'tabarak_ux_icon' ) ) {
+if ( ! function_exists( 'tabarak_ux_icon' ) ) {
 	function tabarak_ux_icon( $name ) {
 		$p = array(
 			'grid'     => '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
@@ -98,7 +98,7 @@ if ( \! function_exists( 'tabarak_ux_icon' ) ) {
 			'box'      => '<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
 			'arrow'    => '<path d="M5 12h14M13 6l6 6-6 6"/>',
 		);
-		if ( \! isset( $p[ $name ] ) ) {
+		if ( ! isset( $p[ $name ] ) ) {
 			return '';
 		}
 		return '<svg class="tux-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $p[ $name ] . '</svg>';
@@ -110,7 +110,7 @@ if ( \! function_exists( 'tabarak_ux_icon' ) ) {
  * ------------------------------------------------------------------ */
 
 /** Quick category links shown directly in the bar. */
-if ( \! function_exists( 'tabarak_ux_quick_cats' ) ) {
+if ( ! function_exists( 'tabarak_ux_quick_cats' ) ) {
 	function tabarak_ux_quick_cats() {
 		return apply_filters(
 			'tabarak_ux_quick_cats',
@@ -127,11 +127,11 @@ if ( \! function_exists( 'tabarak_ux_quick_cats' ) ) {
 }
 
 /** Build (and cache) the mega navigation HTML. */
-if ( \! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
+if ( ! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
 	function tabarak_ux_mega_nav_html() {
 		$key  = 'tabarak_ux_mega_nav_v1';
 		$html = get_transient( $key );
-		if ( is_string( $html ) && '' \!== $html ) {
+		if ( is_string( $html ) && '' !== $html ) {
 			return $html;
 		}
 
@@ -159,7 +159,7 @@ if ( \! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
 		ob_start();
 		?>
 		<ul class="tux-nav__list">
-			<?php if ( \! empty( $cats ) ) : ?>
+			<?php if ( ! empty( $cats ) ) : ?>
 			<li class="tux-nav__item tux-nav__item--mega">
 				<button type="button" class="tux-nav__trigger tux-nav__trigger--all" aria-expanded="false" aria-controls="tux-mega-cats">
 					<?php echo tabarak_ux_icon( 'grid' ); // phpcs:ignore ?>
@@ -189,7 +189,7 @@ if ( \! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
 			</li>
 			<?php endif; ?>
 
-			<?php if ( \! empty( $brands ) ) : ?>
+			<?php if ( ! empty( $brands ) ) : ?>
 			<li class="tux-nav__item tux-nav__item--mega">
 				<button type="button" class="tux-nav__trigger" aria-expanded="false" aria-controls="tux-mega-brands">
 					<span><?php esc_html_e( 'Brands', 'tabarak-electronics-child' ); ?></span>
@@ -244,7 +244,7 @@ if ( \! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
 }
 
 /** Right-hand helper links (not cached: cheap and page aware). */
-if ( \! function_exists( 'tabarak_ux_nav_help' ) ) {
+if ( ! function_exists( 'tabarak_ux_nav_help' ) ) {
 	function tabarak_ux_nav_help() {
 		$links = array(
 			'delivery-installation' => array( __( 'Delivery', 'tabarak-electronics-child' ), 'truck' ),
@@ -267,7 +267,7 @@ if ( \! function_exists( 'tabarak_ux_nav_help' ) ) {
 }
 
 /** Full primary navigation (desktop). Called from header.php. */
-if ( \! function_exists( 'tabarak_child_mega_nav' ) ) {
+if ( ! function_exists( 'tabarak_child_mega_nav' ) ) {
 	function tabarak_child_mega_nav() {
 		?>
 		<nav id="site-navigation" class="main-navigation tux-nav" aria-label="<?php esc_attr_e( 'Primary', 'tabarak-electronics-child' ); ?>">
@@ -281,7 +281,7 @@ if ( \! function_exists( 'tabarak_child_mega_nav' ) ) {
 }
 
 /** Extra links in the mobile drawer (deals, help pages, contact). */
-if ( \! function_exists( 'tabarak_child_drawer_extras' ) ) {
+if ( ! function_exists( 'tabarak_child_drawer_extras' ) ) {
 	function tabarak_child_drawer_extras() {
 		$shop  = tabarak_ux_shop_url();
 		$items = array(
@@ -323,7 +323,7 @@ if ( \! function_exists( 'tabarak_child_drawer_extras' ) ) {
  * ------------------------------------------------------------------ */
 
 /** Short intro line under the page title, per slug. Filterable. */
-if ( \! function_exists( 'tabarak_ux_page_intro' ) ) {
+if ( ! function_exists( 'tabarak_ux_page_intro' ) ) {
 	function tabarak_ux_page_intro( $post ) {
 		$map = array(
 			'about-us'              => __( 'Genuine, warranty-backed electronics and home appliances for homes and businesses across Kenya.', 'tabarak-electronics-child' ),
@@ -346,7 +346,7 @@ if ( \! function_exists( 'tabarak_ux_page_intro' ) ) {
 }
 
 /** Is this one of the WooCommerce app pages (cart, checkout, account)? */
-if ( \! function_exists( 'tabarak_ux_is_wc_page' ) ) {
+if ( ! function_exists( 'tabarak_ux_is_wc_page' ) ) {
 	function tabarak_ux_is_wc_page() {
 		return ( function_exists( 'is_cart' ) && is_cart() ) || ( function_exists( 'is_checkout' ) && is_checkout() ) || ( function_exists( 'is_account_page' ) && is_account_page() );
 	}
@@ -358,9 +358,9 @@ if ( \! function_exists( 'tabarak_ux_is_wc_page' ) ) {
  *    (this made About and Contact render in a monospace font inside a box).
  *  - Remove a leading heading that repeats the page title (Warranty page).
  */
-if ( \! function_exists( 'tabarak_ux_clean_content' ) ) {
+if ( ! function_exists( 'tabarak_ux_clean_content' ) ) {
 	function tabarak_ux_clean_content( $content ) {
-		if ( \! is_singular( 'page' ) || \! in_the_loop() || \! is_main_query() ) {
+		if ( ! is_singular( 'page' ) || ! in_the_loop() || ! is_main_query() ) {
 			return $content;
 		}
 		$content = preg_replace_callback(
@@ -376,7 +376,7 @@ if ( \! function_exists( 'tabarak_ux_clean_content' ) ) {
 			$content
 		);
 		$title = trim( wp_strip_all_tags( get_the_title() ) );
-		if ( '' \!== $title ) {
+		if ( '' !== $title ) {
 			$content = preg_replace_callback(
 				'#^\s*<h[12][^>]*>(.*?)</h[12]>#s',
 				function ( $m ) use ( $title ) {
@@ -392,7 +392,7 @@ if ( \! function_exists( 'tabarak_ux_clean_content' ) ) {
 add_filter( 'the_content', 'tabarak_ux_clean_content', 20 );
 
 /** Page hero header used by page.php. */
-if ( \! function_exists( 'tabarak_ux_page_hero' ) ) {
+if ( ! function_exists( 'tabarak_ux_page_hero' ) ) {
 	function tabarak_ux_page_hero() {
 		$post  = get_post();
 		$intro = tabarak_ux_page_intro( $post );
@@ -415,7 +415,7 @@ if ( \! function_exists( 'tabarak_ux_page_hero' ) ) {
 }
 
 /** Help strip shown under content pages. */
-if ( \! function_exists( 'tabarak_ux_help_strip' ) ) {
+if ( ! function_exists( 'tabarak_ux_help_strip' ) ) {
 	function tabarak_ux_help_strip() {
 		$phone = function_exists( 'tabarak_get_business' ) ? tabarak_get_business( 'phone' ) : '';
 		$wa    = function_exists( 'tabarak_get_business' ) ? tabarak_get_business( 'whatsapp' ) : '';
@@ -442,13 +442,13 @@ if ( \! function_exists( 'tabarak_ux_help_strip' ) ) {
 /* ------------------------------------------------------------------
  * 4. Hot deals filter: ?tab_sale=1 on the shop and category pages
  * ------------------------------------------------------------------ */
-if ( \! function_exists( 'tabarak_ux_sale_filter' ) ) {
+if ( ! function_exists( 'tabarak_ux_sale_filter' ) ) {
 	function tabarak_ux_sale_filter( $q ) {
-		if ( is_admin() || \! $q->is_main_query() || empty( $_GET['tab_sale'] ) || \! function_exists( 'wc_get_product_ids_on_sale' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( is_admin() || ! $q->is_main_query() || empty( $_GET['tab_sale'] ) || ! function_exists( 'wc_get_product_ids_on_sale' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 		$is_ctx = ( function_exists( 'is_shop' ) && is_shop() ) || ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() );
-		if ( \! $is_ctx ) {
+		if ( ! $is_ctx ) {
 			return;
 		}
 		$ids = array_map( 'intval', (array) wc_get_product_ids_on_sale() );
@@ -458,9 +458,9 @@ if ( \! function_exists( 'tabarak_ux_sale_filter' ) ) {
 add_action( 'pre_get_posts', 'tabarak_ux_sale_filter', 20 );
 
 /** Keep tab_sale when the filter form submits, and label the shop hero. */
-if ( \! function_exists( 'tabarak_ux_sale_hidden_field' ) ) {
+if ( ! function_exists( 'tabarak_ux_sale_hidden_field' ) ) {
 	function tabarak_ux_sale_hidden_field() {
-		if ( \! empty( $_GET['tab_sale'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! empty( $_GET['tab_sale'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			echo '<div class="tux-chipbar"><span class="tux-chip tux-chip--deal">' . tabarak_ux_icon( 'fire' ) . esc_html__( 'Showing hot deals only', 'tabarak-electronics-child' ) . '</span> <a class="tux-chip tux-chip--clear" href="' . esc_url( remove_query_arg( 'tab_sale' ) ) . '">' . esc_html__( 'Show all products', 'tabarak-electronics-child' ) . '</a></div>'; // phpcs:ignore
 		}
 	}
@@ -472,17 +472,17 @@ add_action( 'woocommerce_before_shop_loop', 'tabarak_ux_sale_hidden_field', 4 );
  * ------------------------------------------------------------------ */
 
 /** Brand, SKU and stock chips under the product title. */
-if ( \! function_exists( 'tabarak_ux_product_chips' ) ) {
+if ( ! function_exists( 'tabarak_ux_product_chips' ) ) {
 	function tabarak_ux_product_chips() {
 		global $product;
-		if ( \! is_object( $product ) ) {
+		if ( ! is_object( $product ) ) {
 			return;
 		}
 		$chips = array();
 		$btax  = function_exists( 'tabarak_child_brand_tax' ) ? tabarak_child_brand_tax() : '';
 		if ( $btax ) {
 			$terms = get_the_terms( $product->get_id(), $btax );
-			if ( $terms && \! is_wp_error( $terms ) ) {
+			if ( $terms && ! is_wp_error( $terms ) ) {
 				$l = get_term_link( $terms[0] );
 				$chips[] = '<a class="tux-chip tux-chip--brand" href="' . esc_url( is_wp_error( $l ) ? '#' : $l ) . '">' . esc_html( $terms[0]->name ) . '</a>';
 			}
@@ -501,10 +501,10 @@ if ( \! function_exists( 'tabarak_ux_product_chips' ) ) {
 add_action( 'woocommerce_single_product_summary', 'tabarak_ux_product_chips', 6 );
 
 /** "Need help?" box at the end of the summary. */
-if ( \! function_exists( 'tabarak_ux_product_help' ) ) {
+if ( ! function_exists( 'tabarak_ux_product_help' ) ) {
 	function tabarak_ux_product_help() {
 		$phone = function_exists( 'tabarak_get_business' ) ? tabarak_get_business( 'phone' ) : '';
-		if ( \! $phone ) {
+		if ( ! $phone ) {
 			return;
 		}
 		echo '<div class="tux-pdp-help">' . tabarak_ux_icon( 'help' ) . '<div><strong>' . esc_html__( 'Need advice before you buy?', 'tabarak-electronics-child' ) . '</strong><span>' . esc_html__( 'Call our specialists on', 'tabarak-electronics-child' ) . ' <a href="tel:' . esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ) . '">' . esc_html( $phone ) . '</a></span></div></div>'; // phpcs:ignore
@@ -516,7 +516,7 @@ add_action( 'woocommerce_single_product_summary', 'tabarak_ux_product_help', 45 
  * Description fallback: many imported products only repeat their name.
  * Show a structured overview instead (category, brand, attributes, service).
  */
-if ( \! function_exists( 'tabarak_ux_description_is_thin' ) ) {
+if ( ! function_exists( 'tabarak_ux_description_is_thin' ) ) {
 	function tabarak_ux_description_is_thin( $product ) {
 		$desc = trim( wp_strip_all_tags( (string) $product->get_description() ) );
 		$name = trim( wp_strip_all_tags( (string) $product->get_name() ) );
@@ -524,26 +524,26 @@ if ( \! function_exists( 'tabarak_ux_description_is_thin' ) ) {
 	}
 }
 
-if ( \! function_exists( 'tabarak_ux_description_fallback' ) ) {
+if ( ! function_exists( 'tabarak_ux_description_fallback' ) ) {
 	function tabarak_ux_description_fallback() {
 		global $product;
-		if ( \! is_object( $product ) ) {
+		if ( ! is_object( $product ) ) {
 			return;
 		}
 		$desc = trim( (string) $product->get_description() );
 		echo '<h2>' . esc_html__( 'Overview', 'tabarak-electronics-child' ) . '</h2>';
-		if ( '' \!== $desc && 0 \!== strcasecmp( trim( wp_strip_all_tags( $desc ) ), trim( $product->get_name() ) ) ) {
+		if ( '' !== $desc && 0 !== strcasecmp( trim( wp_strip_all_tags( $desc ) ), trim( $product->get_name() ) ) ) {
 			echo wp_kses_post( wpautop( $desc ) );
 		}
 		$rows = array();
 		$cats = get_the_terms( $product->get_id(), 'product_cat' );
-		if ( $cats && \! is_wp_error( $cats ) ) {
+		if ( $cats && ! is_wp_error( $cats ) ) {
 			$rows[ __( 'Category', 'tabarak-electronics-child' ) ] = esc_html( $cats[0]->name );
 		}
 		$btax = function_exists( 'tabarak_child_brand_tax' ) ? tabarak_child_brand_tax() : '';
 		if ( $btax ) {
 			$b = get_the_terms( $product->get_id(), $btax );
-			if ( $b && \! is_wp_error( $b ) ) {
+			if ( $b && ! is_wp_error( $b ) ) {
 				$rows[ __( 'Brand', 'tabarak-electronics-child' ) ] = esc_html( $b[0]->name );
 			}
 		}
@@ -551,7 +551,7 @@ if ( \! function_exists( 'tabarak_ux_description_fallback' ) ) {
 			$rows[ __( 'Model / SKU', 'tabarak-electronics-child' ) ] = esc_html( $product->get_sku() );
 		}
 		foreach ( $product->get_attributes() as $attr ) {
-			if ( \! $attr->get_visible() ) {
+			if ( ! $attr->get_visible() ) {
 				continue;
 			}
 			$label = wc_attribute_label( $attr->get_name() );
@@ -575,10 +575,10 @@ if ( \! function_exists( 'tabarak_ux_description_fallback' ) ) {
 	}
 }
 
-if ( \! function_exists( 'tabarak_ux_product_tabs' ) ) {
+if ( ! function_exists( 'tabarak_ux_product_tabs' ) ) {
 	function tabarak_ux_product_tabs( $tabs ) {
 		global $product;
-		if ( \! is_object( $product ) ) {
+		if ( ! is_object( $product ) ) {
 			return $tabs;
 		}
 		if ( tabarak_ux_description_is_thin( $product ) ) {
@@ -611,10 +611,10 @@ if ( \! function_exists( 'tabarak_ux_product_tabs' ) ) {
 add_filter( 'woocommerce_product_tabs', 'tabarak_ux_product_tabs', 98 );
 
 /** Sticky add-to-cart bar (mobile and desktop on scroll). */
-if ( \! function_exists( 'tabarak_ux_sticky_bar' ) ) {
+if ( ! function_exists( 'tabarak_ux_sticky_bar' ) ) {
 	function tabarak_ux_sticky_bar() {
 		global $product;
-		if ( \! is_object( $product ) || \! $product->is_purchasable() || \! $product->is_in_stock() ) {
+		if ( ! is_object( $product ) || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
 			return;
 		}
 		$img = wp_get_attachment_image_url( $product->get_image_id(), 'thumbnail' );
@@ -637,9 +637,9 @@ add_action( 'woocommerce_after_single_product', 'tabarak_ux_sticky_bar', 5 );
 /* ------------------------------------------------------------------
  * 6. Empty cart helpers
  * ------------------------------------------------------------------ */
-if ( \! function_exists( 'tabarak_ux_empty_cart_cats' ) ) {
+if ( ! function_exists( 'tabarak_ux_empty_cart_cats' ) ) {
 	function tabarak_ux_empty_cart_cats() {
-		if ( \! taxonomy_exists( 'product_cat' ) ) {
+		if ( ! taxonomy_exists( 'product_cat' ) ) {
 			return;
 		}
 		$cats = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => true, 'orderby' => 'count', 'order' => 'DESC', 'number' => 8, 'exclude' => array( (int) get_option( 'default_product_cat' ) ) ) );
@@ -649,7 +649,7 @@ if ( \! function_exists( 'tabarak_ux_empty_cart_cats' ) ) {
 		echo '<div class="tux-emptycats"><p>' . esc_html__( 'Popular categories', 'tabarak-electronics-child' ) . '</p><ul>';
 		foreach ( $cats as $c ) {
 			$l = get_term_link( $c );
-			if ( \! is_wp_error( $l ) ) {
+			if ( ! is_wp_error( $l ) ) {
 				echo '<li><a href="' . esc_url( $l ) . '">' . esc_html( $c->name ) . '</a></li>';
 			}
 		}
@@ -661,7 +661,7 @@ add_action( 'woocommerce_cart_is_empty', 'tabarak_ux_empty_cart_cats', 20 );
 /* ------------------------------------------------------------------
  * 7. Cache flushing
  * ------------------------------------------------------------------ */
-if ( \! function_exists( 'tabarak_ux_flush_caches' ) ) {
+if ( ! function_exists( 'tabarak_ux_flush_caches' ) ) {
 	function tabarak_ux_flush_caches() {
 		delete_transient( 'tabarak_ux_mega_nav_v1' );
 		delete_transient( 'tabarak_home_rows_html' );

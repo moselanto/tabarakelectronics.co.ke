@@ -11,11 +11,11 @@
  * @package Tabarak_Core
  */
 
-if ( \! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( \! class_exists( 'Tabarak_Funnels' ) ) :
+if ( ! class_exists( 'Tabarak_Funnels' ) ) :
 
 final class Tabarak_Funnels {
 
@@ -146,7 +146,7 @@ final class Tabarak_Funnels {
 	/** Funnel config = defaults merged with saved settings. */
 	public static function get( $key ) {
 		$defs = self::definitions();
-		if ( \! isset( $defs[ $key ] ) ) {
+		if ( ! isset( $defs[ $key ] ) ) {
 			return null;
 		}
 		$saved = get_option( self::OPTION, array() );
@@ -156,7 +156,7 @@ final class Tabarak_Funnels {
 			array( 'enabled' => 1, 'products' => array(), 'limit' => 12, 'autofill' => 1, 'image' => '', 'promo' => '', 'badge' => '' )
 		);
 		foreach ( $saved as $k => $v ) {
-			if ( '' \!== $v && null \!== $v ) {
+			if ( '' !== $v && null !== $v ) {
 				$base[ $k ] = $v;
 			} elseif ( in_array( $k, array( 'image', 'promo', 'badge', 'products', 'enabled', 'autofill' ), true ) ) {
 				$base[ $k ] = $v;
@@ -179,7 +179,7 @@ final class Tabarak_Funnels {
 	 * ------------------------------------------------------------------ */
 	public static function add_rewrite() {
 		add_rewrite_rule( '^lp-([a-z0-9-]+)/?$', 'index.php?' . self::QUERY_VAR . '=$matches[1]', 'top' );
-		if ( get_option( 'tabarak_funnels_rw' ) \!== self::RW_VERSION ) {
+		if ( get_option( 'tabarak_funnels_rw' ) !== self::RW_VERSION ) {
 			flush_rewrite_rules( false );
 			update_option( 'tabarak_funnels_rw', self::RW_VERSION );
 		}
@@ -202,12 +202,12 @@ final class Tabarak_Funnels {
 
 	public static function detect() {
 		$slug = get_query_var( self::QUERY_VAR );
-		if ( \! $slug ) {
+		if ( ! $slug ) {
 			return;
 		}
 		$key = self::key_from_slug( sanitize_title( $slug ) );
 		$cfg = $key ? self::get( $key ) : null;
-		if ( \! $cfg || empty( $cfg['enabled'] ) || \! function_exists( 'wc_get_product' ) ) {
+		if ( ! $cfg || empty( $cfg['enabled'] ) || ! function_exists( 'wc_get_product' ) ) {
 			global $wp_query;
 			$wp_query->set_404();
 			status_header( 404 );
@@ -228,7 +228,7 @@ final class Tabarak_Funnels {
 	}
 
 	public static function is_funnel() {
-		return null \!== self::$current;
+		return null !== self::$current;
 	}
 
 	public static function body_class( $classes ) {
@@ -240,7 +240,7 @@ final class Tabarak_Funnels {
 	}
 
 	public static function doc_title( $title ) {
-		if ( \! self::$current ) {
+		if ( ! self::$current ) {
 			return $title;
 		}
 		$cfg = self::get( self::$current );
@@ -248,7 +248,7 @@ final class Tabarak_Funnels {
 	}
 
 	public static function head_meta() {
-		if ( \! self::$current || defined( 'WPSEO_VERSION' ) || defined( 'RANK_MATH_VERSION' ) ) {
+		if ( ! self::$current || defined( 'WPSEO_VERSION' ) || defined( 'RANK_MATH_VERSION' ) ) {
 			return;
 		}
 		$cfg = self::get( self::$current );
@@ -257,7 +257,7 @@ final class Tabarak_Funnels {
 	}
 
 	public static function assets() {
-		if ( \! self::$current ) {
+		if ( ! self::$current ) {
 			return;
 		}
 		wp_enqueue_style( 'tabarak-funnels', TABARAK_CORE_URL . 'assets/css/funnels.css', array(), TABARAK_CORE_VERSION );
@@ -275,10 +275,10 @@ final class Tabarak_Funnels {
 		$ids = array();
 		foreach ( (array) $cfg['cats'] as $c ) {
 			$t = get_term_by( 'slug', sanitize_title( $c ), 'product_cat' );
-			if ( \! $t ) {
+			if ( ! $t ) {
 				$t = get_term_by( 'name', $c, 'product_cat' );
 			}
-			if ( $t && \! is_wp_error( $t ) ) {
+			if ( $t && ! is_wp_error( $t ) ) {
 				$ids[ (int) $t->term_id ] = (int) $t->term_id;
 			}
 		}
@@ -301,7 +301,7 @@ final class Tabarak_Funnels {
 			}
 		}
 		$terms = self::term_ids( $cfg );
-		if ( \! empty( $cfg['autofill'] ) && count( $ids ) < $limit && \! empty( $terms ) ) {
+		if ( ! empty( $cfg['autofill'] ) && count( $ids ) < $limit && ! empty( $terms ) ) {
 			$q = new WP_Query(
 				array(
 					'post_type'           => 'product',
@@ -317,7 +317,7 @@ final class Tabarak_Funnels {
 						array( 'taxonomy' => 'product_cat', 'field' => 'term_id', 'terms' => $terms ),
 					),
 					'meta_query'          => array( // phpcs:ignore WordPress.DB.SlowDBQuery
-						array( 'key' => '_stock_status', 'value' => 'outofstock', 'compare' => '\!=' ),
+						array( 'key' => '_stock_status', 'value' => 'outofstock', 'compare' => '!=' ),
 					),
 				)
 			);
@@ -354,7 +354,7 @@ final class Tabarak_Funnels {
 
 	public static function wa_link( $text ) {
 		$wa = preg_replace( '/[^0-9]/', '', self::biz( 'whatsapp' ) );
-		if ( \! $wa ) {
+		if ( ! $wa ) {
 			return '';
 		}
 		return 'https://wa.me/' . $wa . '?text=' . rawurlencode( $text );
@@ -404,17 +404,17 @@ final class Tabarak_Funnels {
 		$cfg   = self::get( self::$current );
 		$ids   = self::product_ids( $cfg );
 		$terms = self::term_ids( $cfg );
-		$cat   = \! empty( $terms ) ? get_term( $terms[0], 'product_cat' ) : null;
-		$cat_url = ( $cat && \! is_wp_error( $cat ) ) ? get_term_link( $cat ) : ( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' ) );
+		$cat   = ! empty( $terms ) ? get_term( $terms[0], 'product_cat' ) : null;
+		$cat_url = ( $cat && ! is_wp_error( $cat ) ) ? get_term_link( $cat ) : ( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' ) );
 		if ( is_wp_error( $cat_url ) ) {
 			$cat_url = home_url( '/' );
 		}
-		$count    = ( $cat && \! is_wp_error( $cat ) ) ? (int) $cat->count : 0;
+		$count    = ( $cat && ! is_wp_error( $cat ) ) ? (int) $cat->count : 0;
 		$products = array();
 		$min      = null;
 		foreach ( $ids as $pid ) {
 			$p = wc_get_product( $pid );
-			if ( \! $p || \! $p->is_visible() ) {
+			if ( ! $p || ! $p->is_visible() ) {
 				continue;
 			}
 			$products[] = $p;
@@ -431,11 +431,11 @@ final class Tabarak_Funnels {
 		$hero_img = $cfg['image'];
 		?>
 		<div class="tf">
-			<?php if ( \! empty( $cfg['promo'] ) ) : ?>
+			<?php if ( ! empty( $cfg['promo'] ) ) : ?>
 				<div class="tf-promo"><div class="tf-wrap"><?php echo esc_html( $cfg['promo'] ); ?></div></div>
 			<?php endif; ?>
 
-			<\!-- HERO -->
+			<!-- HERO -->
 			<section class="tf-hero">
 				<div class="tf-wrap tf-hero__grid">
 					<div class="tf-hero__copy">
@@ -458,7 +458,7 @@ final class Tabarak_Funnels {
 						<?php endif; ?>
 					</div>
 					<div class="tf-hero__media">
-						<?php if ( null \!== $min ) : ?>
+						<?php if ( null !== $min ) : ?>
 							<div class="tf-from"><span><?php esc_html_e( 'From', 'tabarak-core' ); ?></span><strong><?php echo esc_html( self::plain_price( $min ) ); ?></strong></div>
 						<?php endif; ?>
 						<?php if ( $hero_img ) : ?>
@@ -468,7 +468,7 @@ final class Tabarak_Funnels {
 								<?php
 								$n = 0;
 								foreach ( $products as $p ) {
-									if ( \! $p->get_image_id() ) {
+									if ( ! $p->get_image_id() ) {
 										continue;
 									}
 									echo '<div class="tf-collage__item tf-collage__item--' . (int) $n . '">' . wp_get_attachment_image( $p->get_image_id(), 'woocommerce_thumbnail', false, array( 'alt' => esc_attr( $p->get_name() ), 'loading' => 0 === $n ? 'eager' : 'lazy' ) ) . '</div>';
@@ -483,7 +483,7 @@ final class Tabarak_Funnels {
 				</div>
 			</section>
 
-			<\!-- TRUST -->
+			<!-- TRUST -->
 			<section class="tf-trust">
 				<div class="tf-wrap tf-trust__grid">
 					<div><?php echo self::icon( 'shield' ); // phpcs:ignore ?><strong><?php esc_html_e( 'Genuine + warranty', 'tabarak-core' ); ?></strong><span><?php esc_html_e( 'Original brands only', 'tabarak-core' ); ?></span></div>
@@ -493,9 +493,9 @@ final class Tabarak_Funnels {
 				</div>
 			</section>
 
-			<\!-- BUDGET -->
+			<!-- BUDGET -->
 			<?php $bands = self::lines( $cfg['bands'], 3 ); ?>
-			<?php if ( \! empty( $bands ) ) : ?>
+			<?php if ( ! empty( $bands ) ) : ?>
 			<section class="tf-sec tf-budget">
 				<div class="tf-wrap">
 					<h2 class="tf-h2"><?php esc_html_e( 'What is your budget?', 'tabarak-core' ); ?></h2>
@@ -517,7 +517,7 @@ final class Tabarak_Funnels {
 			</section>
 			<?php endif; ?>
 
-			<\!-- PICKS -->
+			<!-- PICKS -->
 			<section class="tf-sec tf-picks" id="tf-picks">
 				<div class="tf-wrap">
 					<div class="tf-sechead">
@@ -539,13 +539,13 @@ final class Tabarak_Funnels {
 				</div>
 			</section>
 
-			<\!-- BRANDS -->
+			<!-- BRANDS -->
 			<?php
 			$brands = array();
 			if ( $btax ) {
 				foreach ( $products as $p ) {
 					$bt = get_the_terms( $p->get_id(), $btax );
-					if ( $bt && \! is_wp_error( $bt ) ) {
+					if ( $bt && ! is_wp_error( $bt ) ) {
 						$brands[ $bt[0]->slug ] = $bt[0]->name;
 					}
 				}
@@ -564,7 +564,7 @@ final class Tabarak_Funnels {
 			</section>
 			<?php endif; ?>
 
-			<\!-- HOW TO ORDER -->
+			<!-- HOW TO ORDER -->
 			<section class="tf-sec tf-steps">
 				<div class="tf-wrap">
 					<h2 class="tf-h2"><?php esc_html_e( 'Order in 3 easy steps', 'tabarak-core' ); ?></h2>
@@ -576,7 +576,7 @@ final class Tabarak_Funnels {
 				</div>
 			</section>
 
-			<\!-- FAQ -->
+			<!-- FAQ -->
 			<?php
 			$faqs = array_merge(
 				self::lines( $cfg['faqs'], 2 ),
@@ -599,7 +599,7 @@ final class Tabarak_Funnels {
 				</div>
 			</section>
 
-			<\!-- FINAL CTA -->
+			<!-- FINAL CTA -->
 			<section class="tf-final">
 				<div class="tf-wrap tf-final__inner">
 					<div>
@@ -613,7 +613,7 @@ final class Tabarak_Funnels {
 				</div>
 			</section>
 
-			<\!-- STICKY MOBILE BAR -->
+			<!-- STICKY MOBILE BAR -->
 			<div class="tf-sticky" aria-label="<?php esc_attr_e( 'Quick order', 'tabarak-core' ); ?>">
 				<?php if ( $phone ) : ?><a class="tf-sticky__call" href="tel:<?php echo esc_attr( $tel ); ?>"><?php echo self::icon( 'phone' ); // phpcs:ignore ?><?php esc_html_e( 'Call', 'tabarak-core' ); ?></a><?php endif; ?>
 				<?php if ( $wa_main ) : ?><a class="tf-sticky__wa" href="<?php echo esc_url( $wa_main ); ?>" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Order on WhatsApp', 'tabarak-core' ); ?></a><?php endif; ?>
@@ -632,7 +632,7 @@ final class Tabarak_Funnels {
 		$brand   = '';
 		if ( $btax ) {
 			$bt = get_the_terms( $p->get_id(), $btax );
-			if ( $bt && \! is_wp_error( $bt ) ) {
+			if ( $bt && ! is_wp_error( $bt ) ) {
 				$brand = $bt[0]->name;
 			}
 		}
@@ -716,7 +716,7 @@ final class Tabarak_Funnels {
 	}
 
 	public static function admin_page() {
-		if ( \! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
 		$key  = isset( $_GET['funnel'] ) ? sanitize_key( wp_unslash( $_GET['funnel'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -742,8 +742,8 @@ final class Tabarak_Funnels {
 			$edit = add_query_arg( array( 'page' => 'tabarak-funnels', 'funnel' => $k ), admin_url( 'admin.php' ) );
 			echo '<tr><td><strong><a href="' . esc_url( $edit ) . '">' . esc_html( $c['label'] ) . '</a></strong><br><span class="description">' . esc_html( $c['headline'] ) . '</span></td>';
 			echo '<td><a href="' . esc_url( self::url( $k ) ) . '" target="_blank">/' . esc_html( self::slug( $k ) ) . '/</a></td>';
-			echo '<td>' . (int) count( (array) $c['products'] ) . ( \! empty( $c['autofill'] ) ? ' <span class="description">' . esc_html__( '+ auto', 'tabarak-core' ) . '</span>' : '' ) . '</td>';
-			echo '<td>' . ( \! empty( $c['enabled'] ) ? '<span class="tf-pill tf-pill--on">' . esc_html__( 'Live', 'tabarak-core' ) . '</span>' : '<span class="tf-pill tf-pill--off">' . esc_html__( 'Off', 'tabarak-core' ) . '</span>' ) . '</td>';
+			echo '<td>' . (int) count( (array) $c['products'] ) . ( ! empty( $c['autofill'] ) ? ' <span class="description">' . esc_html__( '+ auto', 'tabarak-core' ) . '</span>' : '' ) . '</td>';
+			echo '<td>' . ( ! empty( $c['enabled'] ) ? '<span class="tf-pill tf-pill--on">' . esc_html__( 'Live', 'tabarak-core' ) . '</span>' : '<span class="tf-pill tf-pill--off">' . esc_html__( 'Off', 'tabarak-core' ) . '</span>' ) . '</td>';
 			echo '<td><a class="button" href="' . esc_url( $edit ) . '">' . esc_html__( 'Edit', 'tabarak-core' ) . '</a> <a class="button" href="' . esc_url( self::url( $k ) ) . '" target="_blank">' . esc_html__( 'View', 'tabarak-core' ) . '</a></td></tr>';
 		}
 		echo '</tbody></table>';
@@ -759,7 +759,7 @@ final class Tabarak_Funnels {
 			<input type="hidden" name="funnel" value="<?php echo esc_attr( $key ); ?>">
 			<?php wp_nonce_field( 'tabarak_save_funnel_' . $key ); ?>
 			<table class="form-table" role="presentation">
-				<tr><th scope="row"><?php esc_html_e( 'Status', 'tabarak-core' ); ?></th><td><label><input type="checkbox" name="enabled" value="1" <?php checked( \! empty( $c['enabled'] ) ); ?>> <?php esc_html_e( 'Funnel page is live', 'tabarak-core' ); ?></label></td></tr>
+				<tr><th scope="row"><?php esc_html_e( 'Status', 'tabarak-core' ); ?></th><td><label><input type="checkbox" name="enabled" value="1" <?php checked( ! empty( $c['enabled'] ) ); ?>> <?php esc_html_e( 'Funnel page is live', 'tabarak-core' ); ?></label></td></tr>
 				<tr><th scope="row"><label for="tf-products"><?php esc_html_e( 'Products to show', 'tabarak-core' ); ?></label></th><td>
 					<select id="tf-products" class="wc-product-search" multiple="multiple" style="width:100%;max-width:720px" name="products[]" data-placeholder="<?php esc_attr_e( 'Search for a product by name or SKU', 'tabarak-core' ); ?>" data-action="woocommerce_json_search_products">
 						<?php
@@ -772,7 +772,7 @@ final class Tabarak_Funnels {
 						?>
 					</select>
 					<p class="description"><?php esc_html_e( 'Products appear in the order you add them. The first one gets the "Top pick" ribbon.', 'tabarak-core' ); ?></p>
-					<p><label><input type="checkbox" name="autofill" value="1" <?php checked( \! empty( $c['autofill'] ) ); ?>> <?php esc_html_e( 'Fill empty slots with best sellers and deals from this category', 'tabarak-core' ); ?></label></p>
+					<p><label><input type="checkbox" name="autofill" value="1" <?php checked( ! empty( $c['autofill'] ) ); ?>> <?php esc_html_e( 'Fill empty slots with best sellers and deals from this category', 'tabarak-core' ); ?></label></p>
 					<p><label><?php esc_html_e( 'Number of products', 'tabarak-core' ); ?> <input type="number" min="4" max="24" name="limit" value="<?php echo esc_attr( (int) $c['limit'] ); ?>" class="small-text"></label></p>
 				</td></tr>
 				<tr><th scope="row"><label for="tf-headline"><?php esc_html_e( 'Headline', 'tabarak-core' ); ?></label></th><td><input id="tf-headline" type="text" class="large-text" name="headline" value="<?php echo esc_attr( $c['headline'] ); ?>"></td></tr>
@@ -794,12 +794,12 @@ final class Tabarak_Funnels {
 
 	public static function save() {
 		$key = isset( $_POST['funnel'] ) ? sanitize_key( wp_unslash( $_POST['funnel'] ) ) : '';
-		if ( \! $key || \! current_user_can( 'manage_woocommerce' ) || \! isset( self::definitions()[ $key ] ) ) {
+		if ( ! $key || ! current_user_can( 'manage_woocommerce' ) || ! isset( self::definitions()[ $key ] ) ) {
 			wp_die( esc_html__( 'Not allowed.', 'tabarak-core' ) );
 		}
 		check_admin_referer( 'tabarak_save_funnel_' . $key );
 		$all = get_option( self::OPTION, array() );
-		if ( \! is_array( $all ) ) {
+		if ( ! is_array( $all ) ) {
 			$all = array();
 		}
 		$products = isset( $_POST['products'] ) ? array_values( array_unique( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['products'] ) ) ) ) ) : array();

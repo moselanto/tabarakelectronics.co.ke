@@ -5,7 +5,7 @@
  * @package Tabarak_Core
  */
 
-if ( \! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 get_header();

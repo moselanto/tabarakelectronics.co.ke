@@ -140,12 +140,12 @@
   .tf-sticky a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px;border-radius:999px;font-weight:800;text-decoration:none;font-size:14.5px;}
   .tf-sticky__call{background:#0e1116;color:#fff;}
   .tf-sticky__wa{background:var(--tf-wa);color:#06341a;}
-  body.tabarak-funnel .tabarak-fab--whatsapp{display:none \!important;}
+  body.tabarak-funnel .tabarak-fab--whatsapp{display:none !important;}
   .tf-hero__cta .tf-btn{flex:1 1 100%;}
   .tf-final__btns,.tf-final__btns .tf-btn{width:100%;}
   .tf-sec{padding:28px 0;}
 }
-@media (prefers-reduced-motion:reduce){ .tf *{transition:none \!important;} }
+@media (prefers-reduced-motion:reduce){ .tf *{transition:none !important;} }
 
 /* Dark mode (theme toggle) */
 html[data-theme="dark"] .tf-trust,html[data-theme="dark"] .tf-card,html[data-theme="dark"] .tf-budget__item,html[data-theme="dark"] .tf-steps__grid li,html[data-theme="dark"] .tf-faq__item,html[data-theme="dark"] .tf-chip,html[data-theme="dark"] .tf-btn--line,html[data-theme="dark"] .tf-sticky{background:#171b22;border-color:#252c38;color:#e7e9ee;}

@@ -2,7 +2,7 @@
 
 The **active theme** on [tabarakelectronics.co.ke](https://tabarakelectronics.co.ke/). It inherits from the parent theme `tabarak-electronics` and holds every site-specific design and storefront feature, so parent updates never overwrite them.
 
-\![Child theme preview](screenshot.png)
+![Child theme preview](screenshot.png)
 
 | | |
 | --- | --- |
