@@ -374,3 +374,15 @@ html[data-theme="dark"] .tux-emptycats a{background:#171b22;border-color:#252c38
 
 /* Keep floating buttons clear of the sticky add-to-cart bar on mobile */
 @media (max-width:767px){ body.single-product .tabarak-fab--whatsapp{bottom:142px !important;} body.single-product .tabarak-back-to-top{bottom:142px !important;} }
+
+/* v1.11.2: the parent theme's ".main-navigation li a:hover" painted a light
+   background on the dark bar (text turned unreadable / "whole white"). */
+.tux-nav.main-navigation li a,.tux-nav.main-navigation li a:hover,.tux-nav.main-navigation li a:focus{border-radius:0;}
+.tux-nav.main-navigation .tux-nav__list > li > a:hover,.tux-nav.main-navigation .tux-nav__help > li > a:hover{background:rgba(255,255,255,.06);color:var(--t-accent);}
+.tux-nav.main-navigation .tux-nav__call > a:hover{background:transparent;color:#fff;}
+.tux-nav.main-navigation .tux-nav__call > a:hover small{color:var(--t-accent);}
+.tux-nav.main-navigation .tux-mega li a,.tux-nav.main-navigation .tux-drop li a{border-radius:10px;}
+.tux-nav.main-navigation .tux-mega li a:hover,.tux-nav.main-navigation .tux-drop li a:hover{background:#fff7e6;color:var(--t-accent-ink);}
+.tux-nav.main-navigation .tux-brandgrid li a:hover,.tux-nav.main-navigation .tux-dealgrid li a:hover{background:#fff;color:#0e1116;}
+html[data-theme="dark"] .tux-nav.main-navigation .tux-mega li a:hover,html[data-theme="dark"] .tux-nav.main-navigation .tux-drop li a:hover{background:#1c222c;color:var(--t-accent);}
+html[data-theme="dark"] .tux-nav.main-navigation .tux-dealgrid li a:hover{background:#171b22;color:#fff;}

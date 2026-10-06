@@ -2,6 +2,11 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Electronics Child 1.11.2 - Menu hover fix (2026-10-06)
+
+- Fixed links on the dark menu bar (Call to order, Hot Deals, quick links) turning white on hover. The parent theme's light hover background was overriding the dark bar.
+- Dropdown and panel links keep a soft orange hover.
+
 ## Tabarak Electronics Child 1.11.1 - Menu fixes (2026-10-06)
 
 - Fixed menu items overlapping near *Audio* (quick links ran under the Delivery and Warranty links). The left part of the menu now shrinks cleanly and hides quick links on narrower screens instead of overlapping.
