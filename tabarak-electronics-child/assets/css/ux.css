@@ -406,3 +406,14 @@ ul.products li.product .tux-waq{display:flex;width:100%;margin-top:8px;}
 .tux-cartwa__btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:12px;background:#25D366;color:#06341a !important;font-weight:800;font-size:16px;text-decoration:none !important;}
 .tux-cartwa__btn:hover{background:#1ebe5a;}
 .tux-cartwa__note{margin:8px 0 0;font-size:12.5px;color:#5e6675;text-align:center;}
+
+/* v1.13.1: card buttons - one line, equal height, round WhatsApp button */
+.tabarak-pcard__actions{margin-top:auto;display:flex;align-items:center;gap:6px;}
+.tabarak-pcard__actions .tabarak-pcard__btn{margin-top:0;flex:1 1 auto;min-width:0;height:40px;min-height:40px;padding:0 10px;gap:6px;font-size:13px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tabarak-pcard__actions .tabarak-pcard__btn::before{width:15px;height:15px;}
+.tabarak-pcard__actions .tux-waq{flex:0 0 40px;width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;box-shadow:0 4px 10px rgba(37,211,102,.28);}
+.tabarak-pcard__actions .tux-waq svg{width:20px;height:20px;}
+.tabarak-pcard__actions .added_to_cart{display:none;}
+@media (max-width:380px){.tabarak-pcard__actions .tabarak-pcard__btn{font-size:12px;padding:0 8px;}.tabarak-pcard__actions .tabarak-pcard__btn::before{display:none;}}
+ul.products li.product .button,ul.products li.product .tux-waq{white-space:nowrap;}
+ul.products li.product .tux-waq{min-height:40px;border-radius:999px;}

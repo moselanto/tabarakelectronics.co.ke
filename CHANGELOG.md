@@ -2,6 +2,13 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Electronics Child 1.13.1 - Product card buttons fix (2026-10-06)
+
+- **"Add to cart" button on product cards:** stays on one line instead of wrapping to "Add to / cart".
+- **WhatsApp button on product cards:** now a matching round green button at the same 40px height.
+- **"View cart" link:** WooCommerce adds it after a product goes into the cart. On cards it is now hidden, so the row does not break; the cart pop-up already shows it.
+- **Very small phones (under 380px):** the cart icon is dropped so the text fits.
+
 ## Tabarak Core 1.13.1 + Child 1.13.0 - WhatsApp ordering on cards and cart (2026-10-06)
 
 - **Product cards:** every product card on the homepage, shop, category and search pages now has a green WhatsApp button. It opens the same order form for that product, with its photo, price and quantity.
