@@ -10,6 +10,7 @@
   var T = window.tabarakFunnel || {};
   var STORE = 'tabarak_funnel_contact';
   var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  var T0 = Date.now();
 
   /* ---------- Sticky mobile bar ---------- */
   var bar = document.querySelector('.tf-sticky');
@@ -150,6 +151,7 @@
     fd.append('ref', ref);
     fd.append('funnel', T.funnel || '');
     fd.append('source', source);
+    fd.append('tt', String(Date.now() - T0));
     ['name', 'phone', 'location', 'area', 'delivery', 'payment', 'install', 'notes', 'need', 'budget', 'qty', 'company'].forEach(function (k) {
       fd.append(k, val(form, k));
     });

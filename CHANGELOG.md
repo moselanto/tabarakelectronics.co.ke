@@ -2,6 +2,20 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Security and anti-spam pass (2026-10-06) - Tabarak Core 1.12.1, Child 1.11.3
+
+Found during a live check of the site and a code review, and fixed:
+
+- **Username leak:** `/?author=1` redirected to `/author/moses/`, and the oEmbed endpoint returned the author name. This gave attackers the admin login name. Author archives and `?author=` now redirect to the homepage for visitors, author links are hidden, and the oEmbed author fields are removed. The author scan block now runs before WordPress's canonical redirect.
+- **Spoofable IP:** the login lockout trusted `X-Forwarded-For` and `CF-Connecting-IP`, which anyone can fake to dodge the 10-attempt lockout. A new `Tabarak_Hardening::visitor_ip()` only trusts `CF-Connecting-IP` when the request truly comes from a Cloudflare IP range, and otherwise uses the server's `REMOTE_ADDR`. The funnel lead limiter uses it too.
+- **Login form spam:** wp-login.php and the WooCommerce login form had no honeypot. Both now do.
+- **Fake orders and card testing:** order attempts are limited to 8 per IP per 10 minutes, on both the block checkout (Store API `/wc/store/v1/checkout`) and the classic checkout. Shop managers are exempt.
+- **PHP version leak:** the `X-Powered-By: PHP/8.4.23` header is now removed by the plugin, and a server rule is added to the `.htaccess` snippet.
+- **Cached pages broke search and lead saving:** live search and funnel lead saving required a nonce. LiteSpeed serves cached pages with nonces that expire after about 24 hours, so search returned `-1` and leads failed to save. Live search is read-only and public, so it now works without a nonce, with the search term capped at 60 characters and results cached for 10 minutes. Funnel leads use a honeypot, a fill-time trap (forms submitted in under 2.5 seconds are ignored), link-spam filtering, field length caps and the per-IP limit.
+- **Server snippet** (`tabarak-electronics-child/security/root-htaccess-block.txt`): adds rules that block `wp-admin/install.php`, `readme.html`, `license.txt`, `error_log` and `debug.log`, block `?author=N` scans before WordPress loads, and unset `X-Powered-By`.
+
+Already good on the live site: HTTPS redirect, HSTS, nosniff, X-Frame-Options, Referrer-Policy and Permissions-Policy headers, xmlrpc.php blocked (403), `/wp-json/wp/v2/users` hidden, `.env`, `.git`, readme and license blocked, uploads and wp-includes directory listing blocked, direct PHP file access returns blank, and the server firewall blocks `<script>` in search.
+
 ## Tabarak Core 1.12.0 - Funnel refinements (2026-10-06)
 
 - **Accessories kept out of auto-picked deals.** Each funnel has a price floor and a list of skip words. Televisions skip products under KSh 8,000 and names containing remote, mount, bracket, cable or stand, and the other funnels have their own. This fixes the TV funnel showing a remote control as "Top pick" and "From KSh 1,800". Both settings can be edited under Tabarak > Sales Funnels, and products you pick yourself are always shown.

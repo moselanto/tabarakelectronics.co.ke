@@ -10,8 +10,8 @@
 <img src="https://img.shields.io/badge/Status-Live-2ea44f?style=for-the-badge" alt="Live">
 
 <img src="https://img.shields.io/badge/Theme-v1.2.1-0e1116?style=flat-square" alt="Theme">
-<img src="https://img.shields.io/badge/Child%20theme-v1.11.0-f7a81b?style=flat-square" alt="Child theme">
-<img src="https://img.shields.io/badge/Tabarak%20Core-v1.12.0-a8660a?style=flat-square" alt="Plugin">
+<img src="https://img.shields.io/badge/Child%20theme-v1.11.3-f7a81b?style=flat-square" alt="Child theme">
+<img src="https://img.shields.io/badge/Tabarak%20Core-v1.12.1-a8660a?style=flat-square" alt="Plugin">
 <img src="https://img.shields.io/badge/License-GPLv2%2B-blue?style=flat-square" alt="License">
 
 ### Custom WordPress + WooCommerce platform for [tabarakelectronics.co.ke](https://tabarakelectronics.co.ke/)
@@ -54,8 +54,8 @@ Tabarak Electronics is a home-appliance and electronics retailer based at Nairob
 | Package | Folder | Version | Role |
 | --- | --- | --- | --- |
 | **Tabarak Electronics** (parent theme) | [`tabarak-electronics/`](tabarak-electronics) | 1.2.1 | Base layout, design tokens, header and footer, WooCommerce wrappers, Customizer, menus and widget areas |
-| **Tabarak Electronics Child** (active theme) | [`tabarak-electronics-child/`](tabarak-electronics-child) | 1.11.0 | The storefront customers see: hero slider, category sidebar, product rails, brand strip, live search, shop filters, product trust panel, WhatsApp ordering, dark mode and mobile bottom navigation |
-| **Tabarak Core** (plugin) | [`tabarak-core/`](tabarak-core) | 1.12.0 | Business logic that must survive a theme change: business settings, Brands taxonomy, structured data, policy shortcodes, checkout tweaks, Setup Wizard, security hardening and anti-spam |
+| **Tabarak Electronics Child** (active theme) | [`tabarak-electronics-child/`](tabarak-electronics-child) | 1.11.3 | The storefront customers see: hero slider, category sidebar, product rails, brand strip, live search, shop filters, product trust panel, WhatsApp ordering, dark mode and mobile bottom navigation |
+| **Tabarak Core** (plugin) | [`tabarak-core/`](tabarak-core) | 1.12.1 | Business logic that must survive a theme change: business settings, Brands taxonomy, structured data, policy shortcodes, checkout tweaks, Setup Wizard, security hardening and anti-spam |
 
 > The themes control how the store looks. The plugin holds business data and rules, such as brands, business details and checkout settings, so they stay in place when a theme is updated or replaced. **The child theme is the active theme** on the live site; the parent stays installed so the child can inherit from it.
 

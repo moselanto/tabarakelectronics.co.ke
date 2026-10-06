@@ -317,8 +317,14 @@ if ( ! function_exists( 'tabarak_child_group_carousel' ) ) {
  */
 if ( ! function_exists( 'tabarak_ajax_search' ) ) {
     function tabarak_ajax_search() {
-        check_ajax_referer( 'tabarak_search', 'nonce' );
-        $term  = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
+        // Read-only public search: no nonce (cached pages would serve expired nonces
+        // and break search after 24h). Input is length-capped and results cached.
+        $term  = isset( $_GET['q'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_GET['q'] ) ), 0, 60 ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $ckey  = 'tabarak_sr_' . md5( strtolower( $term ) );
+        $hit   = strlen( $term ) >= 2 ? get_transient( $ckey ) : false;
+        if ( is_array( $hit ) ) {
+            wp_send_json_success( $hit );
+        }
         $items = array();
         if ( strlen( $term ) < 2 || ! function_exists( 'wc_get_product' ) ) {
             wp_send_json_success( array( 'items' => $items, 'more' => '' ) );
@@ -365,6 +371,7 @@ if ( ! function_exists( 'tabarak_ajax_search' ) ) {
             );
         }
         $more = add_query_arg( array( 's' => $term, 'post_type' => 'product' ), home_url( '/' ) );
+        set_transient( $ckey, array( 'items' => $items, 'more' => $more ), 10 * MINUTE_IN_SECONDS );
         wp_send_json_success( array( 'items' => $items, 'more' => $more ) );
     }
 }

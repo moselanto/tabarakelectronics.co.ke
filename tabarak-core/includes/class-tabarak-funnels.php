@@ -1022,12 +1022,18 @@ final class Tabarak_Funnels {
 	}
 
 	public static function ajax_lead() {
-		check_ajax_referer( 'tabarak_funnel_lead', 'nonce' );
-		$in = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised per field below.
-		if ( ! empty( $in['company'] ) ) {
-			wp_send_json_success( array( 'ok' => 1 ) ); // Honeypot filled: quietly ignore.
+		// Public form on cached pages: a stale nonce must not block real customers,
+		// so spam is stopped with a honeypot, a fill-time trap and per-IP limits instead.
+		$in = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised per field below.
+		if ( ! empty( $in['company'] ) || ( isset( $in['tt'] ) && (int) $in['tt'] < 2500 ) ) {
+			wp_send_json_success( array( 'ok' => 1 ) ); // Bot: quietly ignore.
 		}
-		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		foreach ( array( 'need', 'notes' ) as $long ) {
+			if ( isset( $in[ $long ] ) && preg_match_all( '#https?://#i', (string) $in[ $long ] ) > 1 ) {
+				wp_send_json_success( array( 'ok' => 1 ) ); // Link spam: quietly ignore.
+			}
+		}
+		$ip  = class_exists( 'Tabarak_Hardening' ) ? Tabarak_Hardening::visitor_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '' );
 		$rk  = 'tabarak_lead_rl_' . md5( $ip );
 		$cnt = (int) get_transient( $rk );
 		if ( $cnt >= 15 ) {
@@ -1035,7 +1041,7 @@ final class Tabarak_Funnels {
 		}
 		set_transient( $rk, $cnt + 1, HOUR_IN_SECONDS );
 
-		$name  = isset( $in['name'] ) ? sanitize_text_field( $in['name'] ) : '';
+		$name  = isset( $in['name'] ) ? mb_substr( sanitize_text_field( $in['name'] ), 0, 80 ) : '';
 		$phone = self::normalise_phone( isset( $in['phone'] ) ? $in['phone'] : '' );
 		$ref   = isset( $in['ref'] ) ? strtoupper( sanitize_text_field( $in['ref'] ) ) : '';
 		if ( strlen( $name ) < 2 || '' === $phone || ! preg_match( '/^TBK-\d{6}-[A-Z0-9]{4}$/', $ref ) ) {
@@ -1059,8 +1065,8 @@ final class Tabarak_Funnels {
 			'payment'  => isset( $in['payment'] ) ? sanitize_text_field( $in['payment'] ) : '',
 			'install'  => ! empty( $in['install'] ) ? __( 'Yes', 'tabarak-core' ) : __( 'No', 'tabarak-core' ),
 			'budget'   => isset( $in['budget'] ) ? sanitize_text_field( $in['budget'] ) : '',
-			'need'     => isset( $in['need'] ) ? sanitize_textarea_field( $in['need'] ) : '',
-			'notes'    => isset( $in['notes'] ) ? sanitize_textarea_field( $in['notes'] ) : '',
+			'need'     => isset( $in['need'] ) ? mb_substr( sanitize_textarea_field( $in['need'] ), 0, 400 ) : '',
+			'notes'    => isset( $in['notes'] ) ? mb_substr( sanitize_textarea_field( $in['notes'] ), 0, 400 ) : '',
 			'funnel'   => $flabel,
 			'source'   => ( isset( $in['source'] ) && 'quote' === $in['source'] ) ? __( 'Best price request', 'tabarak-core' ) : __( 'Order form', 'tabarak-core' ),
 		);

@@ -40,7 +40,14 @@ class Tabarak_Hardening {
         remove_action( 'wp_head', 'wp_generator' );
         remove_action( 'wp_head', 'wp_shortlink_wp_head' );
         add_filter( 'the_generator', '__return_empty_string' );
-        add_action( 'template_redirect', array( $this, 'block_author_scan' ) );
+        add_action( 'template_redirect', array( $this, 'block_author_scan' ), 1 );
+        add_filter( 'oembed_response_data', array( $this, 'strip_oembed_author' ) );
+        add_filter( 'author_link', array( $this, 'hide_author_link' ) );
+        add_action( 'login_form', array( $this, 'honeypot_field' ) );
+        add_filter( 'authenticate', array( $this, 'check_login_honeypot' ), 25, 1 );
+        add_filter( 'rest_pre_dispatch', array( $this, 'limit_store_checkout' ), 10, 3 );
+        add_action( 'woocommerce_checkout_process', array( $this, 'limit_classic_checkout' ), 1 );
+        add_action( 'woocommerce_login_form', array( $this, 'honeypot_field' ) );
         add_filter( 'rest_endpoints', array( $this, 'restrict_user_rest' ) );
         add_filter( 'login_errors', array( $this, 'generic_login_error' ) );
         add_action( 'send_headers', array( $this, 'security_headers' ) );
@@ -101,7 +108,11 @@ class Tabarak_Hardening {
         if ( is_admin() ) {
             return;
         }
-        if ( isset( $_GET['author'] ) && ! is_user_logged_in() ) {
+        if ( is_user_logged_in() ) {
+            return;
+        }
+        // Stop username discovery through ?author=N and /author/name/ archives.
+        if ( isset( $_GET['author'] ) || is_author() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             wp_safe_redirect( home_url( '/' ), 301 );
             exit;
         }
@@ -130,6 +141,7 @@ class Tabarak_Hardening {
         if ( headers_sent() ) {
             return;
         }
+        header_remove( 'X-Powered-By' );
         header( 'X-Content-Type-Options: nosniff' );
         header( 'X-Frame-Options: SAMEORIGIN' );
         header( 'Referrer-Policy: strict-origin-when-cross-origin' );
@@ -275,16 +287,121 @@ class Tabarak_Hardening {
     }
 
     private function client_ip() {
-        foreach ( array( 'HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR' ) as $h ) {
-            if ( ! empty( $_SERVER[ $h ] ) ) {
-                $parts = explode( ',', wp_unslash( $_SERVER[ $h ] ) );
-                $ip    = trim( $parts[0] );
-                if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-                    return $ip;
-                }
+        return self::visitor_ip();
+    }
+
+    /**
+     * Visitor IP that cannot be spoofed with request headers.
+     * CF-Connecting-IP is only trusted when the request really comes from a
+     * Cloudflare edge; otherwise REMOTE_ADDR (set by the web server) is used.
+     */
+    public static function visitor_ip() {
+        $remote = isset( $_SERVER['REMOTE_ADDR'] ) ? trim( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        if ( ! filter_var( $remote, FILTER_VALIDATE_IP ) ) {
+            return '';
+        }
+        if ( ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) && self::is_cloudflare( $remote ) ) {
+            $cf = trim( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            if ( filter_var( $cf, FILTER_VALIDATE_IP ) ) {
+                return $cf;
             }
         }
-        return '';
+        return $remote;
+    }
+
+    private static function is_cloudflare( $ip ) {
+        $ranges = array(
+            '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22', '141.101.64.0/18', '108.162.192.0/18',
+            '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22', '198.41.128.0/17', '162.158.0.0/15', '104.16.0.0/13',
+            '104.24.0.0/14', '172.64.0.0/13', '131.0.72.0/22',
+            '2400:cb00::/32', '2606:4700::/32', '2803:f800::/32', '2405:b500::/32', '2405:8100::/32', '2a06:98c0::/29', '2c0f:f248::/32',
+        );
+        foreach ( $ranges as $r ) {
+            if ( self::ip_in_range( $ip, $r ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function ip_in_range( $ip, $cidr ) {
+        list( $net, $bits ) = explode( '/', $cidr );
+        $ipb  = @inet_pton( $ip ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+        $netb = @inet_pton( $net ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+        if ( false === $ipb || false === $netb || strlen( $ipb ) !== strlen( $netb ) ) {
+            return false;
+        }
+        $bits  = (int) $bits;
+        $bytes = intdiv( $bits, 8 );
+        if ( substr( $ipb, 0, $bytes ) !== substr( $netb, 0, $bytes ) ) {
+            return false;
+        }
+        $rem = $bits % 8;
+        if ( 0 === $rem ) {
+            return true;
+        }
+        $mask = chr( ( 0xff << ( 8 - $rem ) ) & 0xff );
+        return ( $ipb[ $bytes ] & $mask ) === ( $netb[ $bytes ] & $mask );
+    }
+
+    /** Remove the author name/URL that oEmbed exposes for every page. */
+    public function strip_oembed_author( $data ) {
+        unset( $data['author_name'], $data['author_url'] );
+        return $data;
+    }
+
+    /** Author archive links point to the homepage for visitors. */
+    public function hide_author_link( $link ) {
+        return is_user_logged_in() ? $link : home_url( '/' );
+    }
+
+    /** Honeypot on wp-login.php and the WooCommerce login form. */
+    public function check_login_honeypot( $user ) {
+        $is_post = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'];
+        if ( $is_post && ( isset( $_POST['log'] ) || isset( $_POST['username'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            if ( ! empty( $_POST['tabarak_hp'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+                return new WP_Error( 'tabarak_spam', __( 'Invalid login details. Please try again.', 'tabarak-core' ) );
+            }
+        }
+        return $user;
+    }
+
+    /** Per-IP limiter shared by the checkout guards. */
+    private function over_limit( $bucket, $max, $window ) {
+        $ip = self::visitor_ip();
+        if ( '' === $ip ) {
+            return false;
+        }
+        $key = 'tabarak_rl_' . $bucket . '_' . md5( $ip );
+        $n   = (int) get_transient( $key );
+        if ( $n >= $max ) {
+            return true;
+        }
+        set_transient( $key, $n + 1, $window );
+        return false;
+    }
+
+    /** Card-testing / fake-order guard for the Store API (block checkout). */
+    public function limit_store_checkout( $result, $server, $request ) {
+        if ( null !== $result || ! is_object( $request ) || 'POST' !== $request->get_method() ) {
+            return $result;
+        }
+        if ( 0 === strpos( (string) $request->get_route(), '/wc/store/v1/checkout' ) && ! current_user_can( 'manage_woocommerce' ) ) {
+            if ( $this->over_limit( 'chk', 8, 10 * MINUTE_IN_SECONDS ) ) {
+                return new WP_Error( 'tabarak_rate_limited', __( 'Too many order attempts. Please wait a few minutes or call us to order.', 'tabarak-core' ), array( 'status' => 429 ) );
+            }
+        }
+        return $result;
+    }
+
+    /** Same guard for the classic checkout form. */
+    public function limit_classic_checkout() {
+        if ( current_user_can( 'manage_woocommerce' ) ) {
+            return;
+        }
+        if ( $this->over_limit( 'chk', 8, 10 * MINUTE_IN_SECONDS ) && function_exists( 'wc_add_notice' ) ) {
+            wc_add_notice( __( 'Too many order attempts. Please wait a few minutes or call us to order.', 'tabarak-core' ), 'error' );
+        }
     }
 
     public function note_failed_login( $username ) {
