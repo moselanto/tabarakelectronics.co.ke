@@ -1,9 +1,10 @@
 # Tabarak Electronics - Installation Guide
 
-This package contains two production ZIP files:
+This package contains three production ZIP files:
 
-- `tabarak-electronics.zip` - the WordPress theme
-- `tabarak-core.zip` - the companion plugin (business info, brands, SEO schema, trust badges)
+- `tabarak-electronics.zip` - the parent WordPress theme
+- `tabarak-electronics-child.zip` - the child theme (this is the theme you activate)
+- `tabarak-core.zip` - the companion plugin (business info, brands, SEO schema, trust badges, Setup Wizard, hardening)
 
 ## Requirements
 - WordPress 6.2+
@@ -15,7 +16,12 @@ This package contains two production ZIP files:
 ### 1. Install the theme
 1. In WordPress admin go to **Appearance > Themes > Add New > Upload Theme**.
 2. Choose `tabarak-electronics.zip` and click **Install Now**.
-3. Click **Activate**. The theme activates with no fatal errors even before WooCommerce is installed.
+3. Do not activate it yet. The parent must stay installed because the child theme inherits from it.
+
+### 1b. Install and activate the child theme
+1. Go to **Appearance > Themes > Add New > Upload Theme**.
+2. Choose `tabarak-electronics-child.zip`, click **Install Now**, then **Activate**.
+3. Always keep the child theme active. Put all customisations in the child so parent updates never overwrite them.
 
 ### 2. Install the companion plugin
 1. Go to **Plugins > Add New > Upload Plugin**.
