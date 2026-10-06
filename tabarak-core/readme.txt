@@ -3,7 +3,7 @@ Contributors: tabarakelectronics
 Requires at least: 6.2
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.10.0
+Stable tag: 1.11.0
 License: GPLv2 or later
 
 Companion plugin for the Tabarak Electronics theme. Adds business information,

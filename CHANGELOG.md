@@ -2,6 +2,16 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Core 1.11.0 - WhatsApp order form for funnels (2026-10-06)
+
+- Every *Order on WhatsApp* button on the funnels now opens a polished order form (a centred modal on desktop, a bottom sheet on mobile). It shows the product photo, brand, price and a quantity stepper. The customer enters their name, Kenyan phone number (validated, e.g. 0712 345 678), delivery area (19 Nairobi areas and towns), estate or street, delivery or shop pickup, payment method (M-Pesa on delivery, M-Pesa now, cash, bank) and installation, plus an optional note.
+- On submit, an order reference (e.g. `TBK-261006-7KQ2`) is created, the order is saved in wp-admin, and WhatsApp opens with a neatly formatted order (bold labels, total for more than one item, product link) ready to send.
+- A success screen shows the reference, with a "WhatsApp did not open? Tap here" fallback.
+- New **Get my best price** section near the end of each funnel: a contact form with budget and "what do you need", sent the same way.
+- New **Tabarak > Funnel Orders** list: every submission with reference, name, phone (call and WhatsApp links), location, product and status (New, Contacted, Sold, Not sold). An email alert goes to the business email for each new order.
+- Spam protection with a nonce, a honeypot and a limit of 15 submissions per hour per IP. Name, phone and location are remembered on the device for repeat orders.
+- Cards show an "In stock" marker. Fires a `generate_lead` / `Lead` event when Google Analytics or the Meta Pixel is installed.
+
 ## Tabarak Electronics Child 1.11.2 - Menu hover fix (2026-10-06)
 
 - Fixed links on the dark menu bar (Call to order, Hot Deals, quick links) turning white on hover. The parent theme's light hover background was overriding the dark bar.

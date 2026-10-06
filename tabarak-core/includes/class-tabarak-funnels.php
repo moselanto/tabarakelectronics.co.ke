@@ -28,6 +28,13 @@ final class Tabarak_Funnels {
 
 	public static function init() {
 		add_action( 'init', array( __CLASS__, 'add_rewrite' ) );
+		add_action( 'init', array( __CLASS__, 'register_leads' ) );
+		add_action( 'wp_ajax_tabarak_funnel_lead', array( __CLASS__, 'ajax_lead' ) );
+		add_action( 'wp_ajax_nopriv_tabarak_funnel_lead', array( __CLASS__, 'ajax_lead' ) );
+		add_action( 'add_meta_boxes_tabarak_lead', array( __CLASS__, 'lead_metabox' ) );
+		add_action( 'save_post_tabarak_lead', array( __CLASS__, 'lead_save' ) );
+		add_filter( 'manage_tabarak_lead_posts_columns', array( __CLASS__, 'lead_columns' ) );
+		add_action( 'manage_tabarak_lead_posts_custom_column', array( __CLASS__, 'lead_column' ), 10, 2 );
 		add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'detect' ), 1 );
 		add_filter( 'template_include', array( __CLASS__, 'template' ), 99 );
@@ -262,6 +269,20 @@ final class Tabarak_Funnels {
 		}
 		wp_enqueue_style( 'tabarak-funnels', TABARAK_CORE_URL . 'assets/css/funnels.css', array(), TABARAK_CORE_VERSION );
 		wp_enqueue_script( 'tabarak-funnels', TABARAK_CORE_URL . 'assets/js/funnels.js', array(), TABARAK_CORE_VERSION, true );
+		$cfg = self::get( self::$current );
+		wp_localize_script(
+			'tabarak-funnels',
+			'tabarakFunnel',
+			array(
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'tabarak_funnel_lead' ),
+				'wa'       => preg_replace( '/[^0-9]/', '', self::biz( 'whatsapp' ) ),
+				'funnel'   => self::$current,
+				'label'    => $cfg['label'],
+				'currency' => 'KSh',
+				'pageUrl'  => self::url( self::$current ),
+			)
+		);
 		if ( function_exists( 'WC' ) ) {
 			wp_enqueue_script( 'wc-add-to-cart' );
 			wp_enqueue_script( 'wc-cart-fragments' );
@@ -450,7 +471,7 @@ final class Tabarak_Funnels {
 						<div class="tf-hero__cta">
 							<a class="tf-btn tf-btn--accent tf-btn--lg" href="#tf-picks"><?php esc_html_e( 'See prices', 'tabarak-core' ); ?> <?php echo self::icon( 'arrow' ); // phpcs:ignore ?></a>
 							<?php if ( $wa_main ) : ?>
-								<a class="tf-btn tf-btn--wa tf-btn--lg" href="<?php echo esc_url( $wa_main ); ?>" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Order on WhatsApp', 'tabarak-core' ); ?></a>
+								<a class="tf-btn tf-btn--wa tf-btn--lg js-tf-order" href="<?php echo esc_url( $wa_main ); ?>" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Order on WhatsApp', 'tabarak-core' ); ?></a>
 							<?php endif; ?>
 						</div>
 						<?php if ( $phone ) : ?>
@@ -599,27 +620,17 @@ final class Tabarak_Funnels {
 				</div>
 			</section>
 
-			<!-- FINAL CTA -->
-			<section class="tf-final">
-				<div class="tf-wrap tf-final__inner">
-					<div>
-						<h2><?php esc_html_e( 'Not sure which one to buy?', 'tabarak-core' ); ?></h2>
-						<p><?php esc_html_e( 'Tell us your budget and needs. A specialist will recommend the right one in minutes.', 'tabarak-core' ); ?></p>
-					</div>
-					<div class="tf-final__btns">
-						<?php if ( $wa_main ) : ?><a class="tf-btn tf-btn--wa tf-btn--lg" href="<?php echo esc_url( $wa_main ); ?>" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'WhatsApp us', 'tabarak-core' ); ?></a><?php endif; ?>
-						<?php if ( $phone ) : ?><a class="tf-btn tf-btn--ghost tf-btn--lg" href="tel:<?php echo esc_attr( $tel ); ?>"><?php echo self::icon( 'phone' ); // phpcs:ignore ?><?php echo esc_html( $phone ); ?></a><?php endif; ?>
-					</div>
-				</div>
-			</section>
+			<!-- QUOTE / BEST PRICE -->
+			<?php self::quote_section( $cfg, $phone, $tel ); ?>
 
 			<!-- STICKY MOBILE BAR -->
 			<div class="tf-sticky" aria-label="<?php esc_attr_e( 'Quick order', 'tabarak-core' ); ?>">
 				<?php if ( $phone ) : ?><a class="tf-sticky__call" href="tel:<?php echo esc_attr( $tel ); ?>"><?php echo self::icon( 'phone' ); // phpcs:ignore ?><?php esc_html_e( 'Call', 'tabarak-core' ); ?></a><?php endif; ?>
-				<?php if ( $wa_main ) : ?><a class="tf-sticky__wa" href="<?php echo esc_url( $wa_main ); ?>" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Order on WhatsApp', 'tabarak-core' ); ?></a><?php endif; ?>
+				<?php if ( $wa_main ) : ?><a class="tf-sticky__wa js-tf-order" href="<?php echo esc_url( $wa_main ); ?>" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Order on WhatsApp', 'tabarak-core' ); ?></a><?php endif; ?>
 			</div>
 		</div>
 		<?php
+		self::modal( $cfg, $phone, $tel );
 		self::schema( $cfg, $products, $faqs );
 	}
 
@@ -664,9 +675,18 @@ final class Tabarak_Funnels {
 				<?php if ( $save > 0 && 0 === $i ) : ?>
 					<span class="tf-card__saving"><?php echo esc_html( sprintf( /* translators: %s amount */ __( 'You save %s', 'tabarak-core' ), self::plain_price( $save ) ) ); ?></span>
 				<?php endif; ?>
+				<?php if ( $p->is_in_stock() ) : ?><span class="tf-card__stock"><?php esc_html_e( 'In stock', 'tabarak-core' ); ?></span><?php endif; ?>
 				<div class="tf-card__btns">
 					<?php if ( $wa ) : ?>
-						<a class="tf-btn tf-btn--wa tf-btn--block" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Order on WhatsApp', 'tabarak-core' ); ?></a>
+						<a class="tf-btn tf-btn--wa tf-btn--block js-tf-order" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener nofollow"
+							data-id="<?php echo esc_attr( $p->get_id() ); ?>"
+							data-name="<?php echo esc_attr( $p->get_name() ); ?>"
+							data-price="<?php echo esc_attr( $price > 0 ? $price : '' ); ?>"
+							data-price-label="<?php echo esc_attr( $price > 0 ? self::plain_price( $price ) : __( 'Call for price', 'tabarak-core' ) ); ?>"
+							data-regular="<?php echo esc_attr( $save > 0 ? self::plain_price( $regular ) : '' ); ?>"
+							data-img="<?php echo esc_url( (string) wp_get_attachment_image_url( $p->get_image_id(), 'woocommerce_thumbnail' ) ); ?>"
+							data-brand="<?php echo esc_attr( $brand ); ?>"
+							data-url="<?php echo esc_url( $link ); ?>"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Order on WhatsApp', 'tabarak-core' ); ?></a>
 					<?php endif; ?>
 					<?php if ( $p->is_type( 'simple' ) && $p->is_purchasable() && $p->is_in_stock() ) : ?>
 						<a class="tf-btn tf-btn--line tf-btn--block add_to_cart_button ajax_add_to_cart" href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" data-quantity="1" rel="nofollow"><?php esc_html_e( 'Add to cart', 'tabarak-core' ); ?></a>
@@ -693,6 +713,391 @@ final class Tabarak_Funnels {
 			array( '@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $qa ),
 		);
 		echo '<script type="application/ld+json">' . wp_json_encode( $data ) . '</script>';
+	}
+
+	/* ------------------------------------------------------------------
+	 * Order form (modal + inline best-price section)
+	 * ------------------------------------------------------------------ */
+	public static function locations() {
+		return apply_filters(
+			'tabarak_funnel_locations',
+			array(
+				'Nairobi CBD', 'Nairobi - Westlands / Parklands', 'Nairobi - Kilimani / Kileleshwa / Lavington', 'Nairobi - Karen / Langata', 'Nairobi - South B / C / Industrial Area', 'Nairobi - Embakasi / Utawala', 'Nairobi - Kasarani / Roysambu / Ruaka', 'Nairobi - Eastlands', 'Kiambu / Thika / Ruiru', 'Kitengela / Athi River / Syokimau', 'Ngong / Rongai', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Nyeri', 'Machakos', 'Meru', 'Other town in Kenya',
+			)
+		);
+	}
+
+	/** Shared contact fields. $p = unique id prefix. */
+	private static function contact_fields( $p ) {
+		?>
+		<div class="tf-f">
+			<label for="<?php echo esc_attr( $p ); ?>-name"><?php esc_html_e( 'Full name', 'tabarak-core' ); ?> <span aria-hidden="true">*</span></label>
+			<input id="<?php echo esc_attr( $p ); ?>-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="80" placeholder="<?php esc_attr_e( 'e.g. Jane Wanjiku', 'tabarak-core' ); ?>">
+			<span class="tf-f__err" aria-live="polite"></span>
+		</div>
+		<div class="tf-f">
+			<label for="<?php echo esc_attr( $p ); ?>-phone"><?php esc_html_e( 'Phone / WhatsApp number', 'tabarak-core' ); ?> <span aria-hidden="true">*</span></label>
+			<div class="tf-phone"><span>+254</span><input id="<?php echo esc_attr( $p ); ?>-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="0712 345 678"></div>
+			<span class="tf-f__err" aria-live="polite"></span>
+		</div>
+		<div class="tf-f">
+			<label for="<?php echo esc_attr( $p ); ?>-loc"><?php esc_html_e( 'Delivery location', 'tabarak-core' ); ?> <span aria-hidden="true">*</span></label>
+			<select id="<?php echo esc_attr( $p ); ?>-loc" name="location" required>
+				<option value=""><?php esc_html_e( 'Select your area', 'tabarak-core' ); ?></option>
+				<?php foreach ( self::locations() as $loc ) : ?>
+					<option value="<?php echo esc_attr( $loc ); ?>"><?php echo esc_html( $loc ); ?></option>
+				<?php endforeach; ?>
+			</select>
+			<span class="tf-f__err" aria-live="polite"></span>
+		</div>
+		<div class="tf-f">
+			<label for="<?php echo esc_attr( $p ); ?>-area"><?php esc_html_e( 'Estate, street or building', 'tabarak-core' ); ?></label>
+			<input id="<?php echo esc_attr( $p ); ?>-area" name="area" type="text" maxlength="120" autocomplete="street-address" placeholder="<?php esc_attr_e( 'e.g. Kilimani, Argwings Kodhek Rd', 'tabarak-core' ); ?>">
+		</div>
+		<?php
+	}
+
+	/** Order modal (one per page, filled by JS with the chosen product). */
+	private static function modal( $cfg, $phone, $tel ) {
+		?>
+		<div class="tf-modal" id="tf-order" hidden>
+			<div class="tf-modal__backdrop" data-tf-close></div>
+			<div class="tf-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="tf-order-title">
+				<header class="tf-modal__head">
+					<div>
+						<p class="tf-modal__eyebrow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Fast WhatsApp order', 'tabarak-core' ); ?></p>
+						<h2 id="tf-order-title" class="tf-modal__title"><?php esc_html_e( 'Complete your order', 'tabarak-core' ); ?></h2>
+					</div>
+					<button type="button" class="tf-modal__close" data-tf-close aria-label="<?php esc_attr_e( 'Close', 'tabarak-core' ); ?>">&times;</button>
+				</header>
+				<ol class="tf-progress" aria-hidden="true">
+					<li class="is-on"><span>1</span><?php esc_html_e( 'Your details', 'tabarak-core' ); ?></li>
+					<li><span>2</span><?php esc_html_e( 'Send on WhatsApp', 'tabarak-core' ); ?></li>
+					<li><span>3</span><?php esc_html_e( 'We confirm & deliver', 'tabarak-core' ); ?></li>
+				</ol>
+				<form class="tf-form" data-tf-form="modal" novalidate>
+					<div class="tf-sum" data-tf-product>
+						<img class="tf-sum__img" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" width="72" height="72">
+						<div class="tf-sum__info">
+							<span class="tf-sum__brand"></span>
+							<strong class="tf-sum__name"></strong>
+							<span class="tf-sum__price"><b></b> <del></del></span>
+						</div>
+						<div class="tf-qty" role="group" aria-label="<?php esc_attr_e( 'Quantity', 'tabarak-core' ); ?>">
+							<button type="button" data-qty="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', 'tabarak-core' ); ?>">&minus;</button>
+							<input type="number" name="qty" value="1" min="1" max="20" inputmode="numeric" aria-label="<?php esc_attr_e( 'Quantity', 'tabarak-core' ); ?>">
+							<button type="button" data-qty="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'tabarak-core' ); ?>">+</button>
+						</div>
+					</div>
+					<div class="tf-f tf-f--full tf-need" data-tf-general hidden>
+						<label for="tfm-need"><?php esc_html_e( 'What are you looking for?', 'tabarak-core' ); ?></label>
+						<textarea id="tfm-need" name="need" rows="2" maxlength="400" placeholder="<?php echo esc_attr( sprintf( /* translators: %s category */ __( 'e.g. %s for a family of 4, budget around KSh 40,000', 'tabarak-core' ), $cfg['label'] ) ); ?>"></textarea>
+					</div>
+
+					<div class="tf-fields">
+						<?php self::contact_fields( 'tfm' ); ?>
+					</div>
+
+					<fieldset class="tf-choice">
+						<legend><?php esc_html_e( 'How do you want to receive it?', 'tabarak-core' ); ?></legend>
+						<label class="tf-opt"><input type="radio" name="delivery" value="delivery" checked><span><strong><?php esc_html_e( 'Deliver to me', 'tabarak-core' ); ?></strong><small><?php esc_html_e( 'Next day in Nairobi, 1-5 days countrywide', 'tabarak-core' ); ?></small></span></label>
+						<label class="tf-opt"><input type="radio" name="delivery" value="pickup"><span><strong><?php esc_html_e( 'Pick up at our shop', 'tabarak-core' ); ?></strong><small><?php esc_html_e( 'Nairobi Sky Mall, Luthuli Street', 'tabarak-core' ); ?></small></span></label>
+					</fieldset>
+
+					<fieldset class="tf-choice tf-choice--pay">
+						<legend><?php esc_html_e( 'How will you pay?', 'tabarak-core' ); ?></legend>
+						<label class="tf-pill"><input type="radio" name="payment" value="M-Pesa on delivery" checked><span><?php esc_html_e( 'M-Pesa on delivery', 'tabarak-core' ); ?></span></label>
+						<label class="tf-pill"><input type="radio" name="payment" value="M-Pesa now"><span><?php esc_html_e( 'M-Pesa now', 'tabarak-core' ); ?></span></label>
+						<label class="tf-pill"><input type="radio" name="payment" value="Cash"><span><?php esc_html_e( 'Cash', 'tabarak-core' ); ?></span></label>
+						<label class="tf-pill"><input type="radio" name="payment" value="Bank transfer"><span><?php esc_html_e( 'Bank transfer', 'tabarak-core' ); ?></span></label>
+					</fieldset>
+
+					<label class="tf-check"><input type="checkbox" name="install" value="1"><span><?php esc_html_e( 'I need installation / setup', 'tabarak-core' ); ?></span></label>
+
+					<details class="tf-more">
+						<summary><?php esc_html_e( 'Add a note (optional)', 'tabarak-core' ); ?></summary>
+						<textarea name="notes" rows="2" maxlength="400" aria-label="<?php esc_attr_e( 'Note', 'tabarak-core' ); ?>" placeholder="<?php esc_attr_e( 'e.g. Please call before delivery, preferred colour, gate details', 'tabarak-core' ); ?>"></textarea>
+					</details>
+
+					<input type="text" name="company" class="tf-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+					<div class="tf-total" data-tf-total hidden><span><?php esc_html_e( 'Estimated total', 'tabarak-core' ); ?></span><strong></strong></div>
+
+					<button type="submit" class="tf-btn tf-btn--wa tf-btn--lg tf-btn--block tf-submit"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><span><?php esc_html_e( 'Send order on WhatsApp', 'tabarak-core' ); ?></span></button>
+					<p class="tf-fine"><?php echo self::icon( 'shield' ); // phpcs:ignore ?><span><?php esc_html_e( 'No payment now. We confirm price, stock and delivery with you first. Your details are only used for this order.', 'tabarak-core' ); ?></span></p>
+					<?php if ( $phone ) : ?>
+						<p class="tf-fine tf-fine--call"><?php esc_html_e( 'Prefer to talk?', 'tabarak-core' ); ?> <a href="tel:<?php echo esc_attr( $tel ); ?>"><?php echo esc_html( $phone ); ?></a></p>
+					<?php endif; ?>
+				</form>
+
+				<div class="tf-done" hidden>
+					<div class="tf-done__icon"><?php echo self::icon( 'check' ); // phpcs:ignore ?></div>
+					<h3><?php esc_html_e( 'Almost done! Tap "Send" in WhatsApp', 'tabarak-core' ); ?></h3>
+					<p><?php esc_html_e( 'Your order reference is', 'tabarak-core' ); ?> <strong class="tf-done__ref"></strong></p>
+					<p class="tf-done__text"><?php esc_html_e( 'Our team will reply on WhatsApp to confirm price, stock and delivery time. During working hours we usually reply within minutes.', 'tabarak-core' ); ?></p>
+					<a class="tf-btn tf-btn--wa tf-btn--lg tf-btn--block tf-done__wa" href="#" target="_blank" rel="noopener nofollow"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'WhatsApp did not open? Tap here', 'tabarak-core' ); ?></a>
+					<button type="button" class="tf-btn tf-btn--line tf-btn--block" data-tf-close><?php esc_html_e( 'Continue browsing', 'tabarak-core' ); ?></button>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/** Inline "get the best price" section near the end of the page. */
+	private static function quote_section( $cfg, $phone, $tel ) {
+		$bands = self::lines( $cfg['bands'], 3 );
+		?>
+		<section class="tf-quote" id="tf-quote">
+			<div class="tf-wrap tf-quote__grid">
+				<div class="tf-quote__copy">
+					<p class="tf-eyebrow"><?php esc_html_e( 'Free expert advice', 'tabarak-core' ); ?></p>
+					<h2><?php esc_html_e( 'Not sure which one to buy? Get the best price in minutes.', 'tabarak-core' ); ?></h2>
+					<p><?php echo esc_html( sprintf( /* translators: %s category */ __( 'Tell us your budget and needs. A Tabarak specialist will recommend the right %s and send you today\'s best price on WhatsApp.', 'tabarak-core' ), strtolower( $cfg['label'] ) ) ); ?></p>
+					<ul class="tf-quote__list">
+						<li><?php echo self::icon( 'check' ); // phpcs:ignore ?><?php esc_html_e( 'Honest advice, no pressure', 'tabarak-core' ); ?></li>
+						<li><?php echo self::icon( 'check' ); // phpcs:ignore ?><?php esc_html_e( 'Genuine brands with warranty', 'tabarak-core' ); ?></li>
+						<li><?php echo self::icon( 'check' ); // phpcs:ignore ?><?php esc_html_e( 'Delivery and installation arranged for you', 'tabarak-core' ); ?></li>
+					</ul>
+					<?php if ( $phone ) : ?>
+						<a class="tf-quote__call" href="tel:<?php echo esc_attr( $tel ); ?>"><?php echo self::icon( 'phone' ); // phpcs:ignore ?><span><small><?php esc_html_e( 'Or call us now', 'tabarak-core' ); ?></small><?php echo esc_html( $phone ); ?></span></a>
+					<?php endif; ?>
+				</div>
+				<form class="tf-form tf-card-form" data-tf-form="quote" novalidate>
+					<p class="tf-card-form__title"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><?php esc_html_e( 'Get my best price', 'tabarak-core' ); ?></p>
+					<div class="tf-fields">
+						<?php self::contact_fields( 'tfq' ); ?>
+						<?php if ( ! empty( $bands ) ) : ?>
+						<div class="tf-f tf-f--full">
+							<label for="tfq-budget"><?php esc_html_e( 'Your budget', 'tabarak-core' ); ?></label>
+							<select id="tfq-budget" name="budget">
+								<option value=""><?php esc_html_e( 'Choose a budget (optional)', 'tabarak-core' ); ?></option>
+								<?php foreach ( $bands as $b ) : ?>
+									<option value="<?php echo esc_attr( 'KSh ' . $b[0] ); ?>"><?php echo esc_html( 'KSh ' . $b[0] ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+						<?php endif; ?>
+						<div class="tf-f tf-f--full">
+							<label for="tfq-need"><?php esc_html_e( 'What do you need?', 'tabarak-core' ); ?></label>
+							<textarea id="tfq-need" name="need" rows="2" maxlength="400" placeholder="<?php esc_attr_e( 'e.g. size, brand you like, where it will be used', 'tabarak-core' ); ?>"></textarea>
+						</div>
+					</div>
+					<input type="text" name="company" class="tf-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+					<button type="submit" class="tf-btn tf-btn--wa tf-btn--lg tf-btn--block tf-submit"><?php echo self::icon( 'wa' ); // phpcs:ignore ?><span><?php esc_html_e( 'Send on WhatsApp', 'tabarak-core' ); ?></span></button>
+					<p class="tf-fine"><?php echo self::icon( 'shield' ); // phpcs:ignore ?><span><?php esc_html_e( 'Free, no obligation. Your details are only used to help you.', 'tabarak-core' ); ?></span></p>
+					<div class="tf-inline-done" hidden><?php echo self::icon( 'check' ); // phpcs:ignore ?><div><strong><?php esc_html_e( 'Request ready. Tap "Send" in WhatsApp.', 'tabarak-core' ); ?></strong><span><?php esc_html_e( 'Reference', 'tabarak-core' ); ?> <b class="tf-done__ref"></b> &middot; <a class="tf-done__wa" href="#" target="_blank" rel="noopener nofollow"><?php esc_html_e( 'Open WhatsApp again', 'tabarak-core' ); ?></a></span></div></div>
+				</form>
+			</div>
+		</section>
+		<?php
+	}
+
+	/* ------------------------------------------------------------------
+	 * Leads: every form submission is saved before WhatsApp opens
+	 * ------------------------------------------------------------------ */
+	public static function register_leads() {
+		register_post_type(
+			'tabarak_lead',
+			array(
+				'labels'          => array(
+					'name'          => __( 'Funnel Orders', 'tabarak-core' ),
+					'singular_name' => __( 'Funnel Order', 'tabarak-core' ),
+					'menu_name'     => __( 'Funnel Orders', 'tabarak-core' ),
+					'all_items'     => __( 'Funnel Orders', 'tabarak-core' ),
+					'edit_item'     => __( 'Funnel order', 'tabarak-core' ),
+					'search_items'  => __( 'Search orders', 'tabarak-core' ),
+					'not_found'     => __( 'No funnel orders yet.', 'tabarak-core' ),
+				),
+				'public'          => false,
+				'show_ui'         => true,
+				'show_in_menu'    => 'tabarak-core',
+				'show_in_rest'    => false,
+				'supports'        => array( 'title' ),
+				'capability_type' => 'post',
+				'capabilities'    => array( 'create_posts' => 'do_not_allow' ),
+				'map_meta_cap'    => true,
+			)
+		);
+	}
+
+	/** Normalise a Kenyan phone number to 2547XXXXXXXX / 2541XXXXXXXX, or ''. */
+	public static function normalise_phone( $raw ) {
+		$d = preg_replace( '/\D/', '', (string) $raw );
+		if ( 10 === strlen( $d ) && '0' === $d[0] ) {
+			$d = '254' . substr( $d, 1 );
+		} elseif ( 9 === strlen( $d ) && in_array( $d[0], array( '7', '1' ), true ) ) {
+			$d = '254' . $d;
+		}
+		return preg_match( '/^254[17]\d{8}$/', $d ) ? $d : '';
+	}
+
+	private static function lead_fields() {
+		return array(
+			'ref'      => __( 'Reference', 'tabarak-core' ),
+			'name'     => __( 'Name', 'tabarak-core' ),
+			'phone'    => __( 'Phone', 'tabarak-core' ),
+			'product'  => __( 'Product', 'tabarak-core' ),
+			'price'    => __( 'Price', 'tabarak-core' ),
+			'qty'      => __( 'Quantity', 'tabarak-core' ),
+			'location' => __( 'Location', 'tabarak-core' ),
+			'area'     => __( 'Estate / street', 'tabarak-core' ),
+			'delivery' => __( 'Delivery', 'tabarak-core' ),
+			'payment'  => __( 'Payment', 'tabarak-core' ),
+			'install'  => __( 'Installation', 'tabarak-core' ),
+			'budget'   => __( 'Budget', 'tabarak-core' ),
+			'need'     => __( 'Looking for', 'tabarak-core' ),
+			'notes'    => __( 'Notes', 'tabarak-core' ),
+			'funnel'   => __( 'Funnel', 'tabarak-core' ),
+			'source'   => __( 'Form', 'tabarak-core' ),
+		);
+	}
+
+	public static function ajax_lead() {
+		check_ajax_referer( 'tabarak_funnel_lead', 'nonce' );
+		$in = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised per field below.
+		if ( ! empty( $in['company'] ) ) {
+			wp_send_json_success( array( 'ok' => 1 ) ); // Honeypot filled: quietly ignore.
+		}
+		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$rk  = 'tabarak_lead_rl_' . md5( $ip );
+		$cnt = (int) get_transient( $rk );
+		if ( $cnt >= 15 ) {
+			wp_send_json_error( array( 'message' => __( 'Too many requests. Please call us.', 'tabarak-core' ) ), 429 );
+		}
+		set_transient( $rk, $cnt + 1, HOUR_IN_SECONDS );
+
+		$name  = isset( $in['name'] ) ? sanitize_text_field( $in['name'] ) : '';
+		$phone = self::normalise_phone( isset( $in['phone'] ) ? $in['phone'] : '' );
+		$ref   = isset( $in['ref'] ) ? strtoupper( sanitize_text_field( $in['ref'] ) ) : '';
+		if ( strlen( $name ) < 2 || '' === $phone || ! preg_match( '/^TBK-\d{6}-[A-Z0-9]{4}$/', $ref ) ) {
+			wp_send_json_error( array( 'message' => __( 'Please check your name and phone number.', 'tabarak-core' ) ), 400 );
+		}
+		$pid     = isset( $in['product_id'] ) ? absint( $in['product_id'] ) : 0;
+		$product = ( $pid && 'product' === get_post_type( $pid ) ) ? get_the_title( $pid ) : '';
+		$funnel  = isset( $in['funnel'] ) ? sanitize_key( $in['funnel'] ) : '';
+		$defs    = self::definitions();
+		$flabel  = isset( $defs[ $funnel ] ) ? $defs[ $funnel ]['label'] : '';
+		$data    = array(
+			'ref'      => $ref,
+			'name'     => $name,
+			'phone'    => '+' . $phone,
+			'product'  => $product,
+			'price'    => isset( $in['price'] ) ? sanitize_text_field( $in['price'] ) : '',
+			'qty'      => (string) max( 1, min( 20, isset( $in['qty'] ) ? absint( $in['qty'] ) : 1 ) ),
+			'location' => isset( $in['location'] ) ? sanitize_text_field( $in['location'] ) : '',
+			'area'     => isset( $in['area'] ) ? sanitize_text_field( $in['area'] ) : '',
+			'delivery' => ( isset( $in['delivery'] ) && 'pickup' === $in['delivery'] ) ? __( 'Pick up at shop', 'tabarak-core' ) : __( 'Deliver to customer', 'tabarak-core' ),
+			'payment'  => isset( $in['payment'] ) ? sanitize_text_field( $in['payment'] ) : '',
+			'install'  => ! empty( $in['install'] ) ? __( 'Yes', 'tabarak-core' ) : __( 'No', 'tabarak-core' ),
+			'budget'   => isset( $in['budget'] ) ? sanitize_text_field( $in['budget'] ) : '',
+			'need'     => isset( $in['need'] ) ? sanitize_textarea_field( $in['need'] ) : '',
+			'notes'    => isset( $in['notes'] ) ? sanitize_textarea_field( $in['notes'] ) : '',
+			'funnel'   => $flabel,
+			'source'   => ( isset( $in['source'] ) && 'quote' === $in['source'] ) ? __( 'Best price request', 'tabarak-core' ) : __( 'Order form', 'tabarak-core' ),
+		);
+		$title   = $ref . ' - ' . $name . ( $product ? ' - ' . $product : ( $flabel ? ' - ' . $flabel : '' ) );
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => 'tabarak_lead',
+				'post_status' => 'publish',
+				'post_title'  => wp_strip_all_tags( $title ),
+			),
+			true
+		);
+		if ( is_wp_error( $post_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Could not save. WhatsApp still works.', 'tabarak-core' ) ), 500 );
+		}
+		foreach ( $data as $k => $v ) {
+			update_post_meta( $post_id, '_tl_' . $k, $v );
+		}
+		update_post_meta( $post_id, '_tl_status', 'new' );
+		update_post_meta( $post_id, '_tl_product_id', $pid );
+
+		$to = self::biz( 'email' );
+		if ( $to && is_email( $to ) ) {
+			$lines = array();
+			foreach ( self::lead_fields() as $k => $label ) {
+				if ( '' !== $data[ $k ] ) {
+					$lines[] = $label . ': ' . $data[ $k ];
+				}
+			}
+			$lines[] = '';
+			$lines[] = admin_url( 'post.php?post=' . $post_id . '&action=edit' );
+			wp_mail( $to, sprintf( 'New funnel order %s - %s', $ref, $name ), implode( "\n", $lines ) );
+		}
+		wp_send_json_success( array( 'ref' => $ref ) );
+	}
+
+	public static function lead_statuses() {
+		return array(
+			'new'       => __( 'New', 'tabarak-core' ),
+			'contacted' => __( 'Contacted', 'tabarak-core' ),
+			'won'       => __( 'Sold', 'tabarak-core' ),
+			'lost'      => __( 'Not sold', 'tabarak-core' ),
+		);
+	}
+
+	public static function lead_metabox() {
+		add_meta_box( 'tabarak_lead_details', __( 'Order details', 'tabarak-core' ), array( __CLASS__, 'lead_metabox_html' ), 'tabarak_lead', 'normal', 'high' );
+	}
+
+	public static function lead_metabox_html( $post ) {
+		wp_nonce_field( 'tabarak_lead_status', 'tabarak_lead_nonce' );
+		$status = get_post_meta( $post->ID, '_tl_status', true );
+		echo '<table class="widefat striped"><tbody>';
+		foreach ( self::lead_fields() as $k => $label ) {
+			$v = (string) get_post_meta( $post->ID, '_tl_' . $k, true );
+			if ( '' === $v ) {
+				continue;
+			}
+			if ( 'phone' === $k ) {
+				$digits = preg_replace( '/\D/', '', $v );
+				$v      = '<a href="tel:+' . esc_attr( $digits ) . '">' . esc_html( $v ) . '</a> &nbsp; <a class="button button-small" target="_blank" rel="noopener" href="' . esc_url( 'https://wa.me/' . $digits ) . '">WhatsApp</a>';
+			} else {
+				$v = nl2br( esc_html( $v ) );
+			}
+			echo '<tr><th style="width:180px">' . esc_html( $label ) . '</th><td>' . $v . '</td></tr>'; // phpcs:ignore -- escaped above.
+		}
+		echo '</tbody></table><p><label><strong>' . esc_html__( 'Status', 'tabarak-core' ) . '</strong> <select name="tabarak_lead_status">';
+		foreach ( self::lead_statuses() as $k => $label ) {
+			echo '<option value="' . esc_attr( $k ) . '" ' . selected( $status, $k, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select></label></p>';
+	}
+
+	public static function lead_save( $post_id ) {
+		if ( ! isset( $_POST['tabarak_lead_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tabarak_lead_nonce'] ) ), 'tabarak_lead_status' ) || ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+		$s = isset( $_POST['tabarak_lead_status'] ) ? sanitize_key( wp_unslash( $_POST['tabarak_lead_status'] ) ) : 'new';
+		if ( isset( self::lead_statuses()[ $s ] ) ) {
+			update_post_meta( $post_id, '_tl_status', $s );
+		}
+	}
+
+	public static function lead_columns( $cols ) {
+		return array(
+			'cb'        => isset( $cols['cb'] ) ? $cols['cb'] : '',
+			'title'     => __( 'Order', 'tabarak-core' ),
+			'tl_phone'  => __( 'Phone', 'tabarak-core' ),
+			'tl_where'  => __( 'Location', 'tabarak-core' ),
+			'tl_status' => __( 'Status', 'tabarak-core' ),
+			'date'      => __( 'Date', 'tabarak-core' ),
+		);
+	}
+
+	public static function lead_column( $col, $post_id ) {
+		if ( 'tl_phone' === $col ) {
+			$v = (string) get_post_meta( $post_id, '_tl_phone', true );
+			$d = preg_replace( '/\D/', '', $v );
+			echo '<a href="tel:+' . esc_attr( $d ) . '">' . esc_html( $v ) . '</a> &middot; <a target="_blank" rel="noopener" href="' . esc_url( 'https://wa.me/' . $d ) . '">WhatsApp</a>';
+		} elseif ( 'tl_where' === $col ) {
+			echo esc_html( trim( get_post_meta( $post_id, '_tl_location', true ) . ' ' . get_post_meta( $post_id, '_tl_area', true ) ) );
+		} elseif ( 'tl_status' === $col ) {
+			$s  = (string) get_post_meta( $post_id, '_tl_status', true );
+			$st = self::lead_statuses();
+			echo esc_html( isset( $st[ $s ] ) ? $st[ $s ] : $s );
+		}
 	}
 
 	/* ------------------------------------------------------------------
