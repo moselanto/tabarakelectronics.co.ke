@@ -101,7 +101,7 @@ if ( $has_biz ) :
     if ( $wa ) :
         $wa_msg = rawurlencode( 'Hello Tabarak, I would like to place an order.' );
         ?>
-        <a class="tabarak-fab tabarak-fab--whatsapp" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo $wa_msg; ?>" target="_blank" rel="noopener nofollow" aria-label="<?php esc_attr_e( 'Order on WhatsApp', 'tabarak-electronics-child' ); ?>">
+        <a class="tabarak-fab tabarak-fab--whatsapp js-tf-order" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo $wa_msg; ?>" target="_blank" rel="noopener nofollow" aria-label="<?php esc_attr_e( 'Order on WhatsApp', 'tabarak-electronics-child' ); ?>">
             <span class="tabarak-fab__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 2a8 8 0 11-4.1 14.9l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 0112 4zm4.3 10.2c-.2-.1-1.3-.7-1.5-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 01-1.9-1.2 7.2 7.2 0 01-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 00-.7.3A2.8 2.8 0 006 8.6c0 1.6 1.2 3.2 1.3 3.4s2.3 3.6 5.7 5c.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.3.2-1.5z"/></svg></span>
             <span class="tabarak-fab__label"><?php esc_html_e( 'Order on WhatsApp', 'tabarak-electronics-child' ); ?></span>
         </a>

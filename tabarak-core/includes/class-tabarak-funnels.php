@@ -39,6 +39,9 @@ final class Tabarak_Funnels {
 		add_action( 'template_redirect', array( __CLASS__, 'detect' ), 1 );
 		add_filter( 'template_include', array( __CLASS__, 'template' ), 99 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'assets' ), 40 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'sitewide_assets' ), 41 );
+		add_action( 'wp_footer', array( __CLASS__, 'sitewide_modal' ), 20 );
+		add_filter( 'style_loader_tag', array( __CLASS__, 'async_style' ), 10, 2 );
 		add_filter( 'pre_get_document_title', array( __CLASS__, 'doc_title' ), 50 );
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
 		add_action( 'wp_head', array( __CLASS__, 'head_meta' ), 2 );
@@ -308,6 +311,62 @@ final class Tabarak_Funnels {
 			wp_enqueue_script( 'wc-add-to-cart' );
 			wp_enqueue_script( 'wc-cart-fragments' );
 		}
+	}
+
+	/* ------------------------------------------------------------------
+	 * Site-wide WhatsApp order form (v1.13.0)
+	 * Every "Order on WhatsApp" button (product page, floating button) opens
+	 * the same pop-up form as the funnel pages: details first, then WhatsApp
+	 * opens with a ready order. Each order is saved under Funnel Orders.
+	 * ------------------------------------------------------------------ */
+	private static $sitewide = false;
+
+	public static function sitewide_assets() {
+		if ( self::$current || is_admin() || ! apply_filters( 'tabarak_wa_form_enabled', true ) ) {
+			return;
+		}
+		if ( function_exists( 'is_checkout' ) && ( is_checkout() || is_account_page() ) ) {
+			return;
+		}
+		$wa = preg_replace( '/[^0-9]/', '', self::biz( 'whatsapp' ) );
+		if ( '' === $wa ) {
+			return;
+		}
+		self::$sitewide = true;
+		wp_enqueue_style( 'tabarak-funnels', TABARAK_CORE_URL . 'assets/css/funnels.css', array(), TABARAK_CORE_VERSION );
+		wp_enqueue_script( 'tabarak-funnels', TABARAK_CORE_URL . 'assets/js/funnels.js', array(), TABARAK_CORE_VERSION, true );
+		wp_script_add_data( 'tabarak-funnels', 'strategy', 'defer' );
+		$page = is_singular() ? get_permalink() : home_url( '/' );
+		wp_localize_script(
+			'tabarak-funnels',
+			'tabarakFunnel',
+			array(
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => '',
+				'wa'       => $wa,
+				'funnel'   => 'site',
+				'label'    => '',
+				'currency' => 'KSh',
+				'pageUrl'  => $page,
+			)
+		);
+	}
+
+	public static function sitewide_modal() {
+		if ( ! self::$sitewide ) {
+			return;
+		}
+		$phone = self::biz( 'phone' );
+		$tel   = preg_replace( '/[^0-9+]/', '', (string) $phone );
+		self::modal( array( 'label' => __( 'A fridge', 'tabarak-core' ) ), $phone, $tel );
+	}
+
+	/** The form is hidden until a button is tapped, so its CSS never blocks the first paint. */
+	public static function async_style( $tag, $handle ) {
+		if ( 'tabarak-funnels' !== $handle || self::$current ) {
+			return $tag;
+		}
+		return preg_replace( '/media=([\'"])all\1/', 'media="print" onload="this.media=\'all\'"', $tag, 1 );
 	}
 
 	/* ------------------------------------------------------------------
@@ -1051,7 +1110,7 @@ final class Tabarak_Funnels {
 		$product = ( $pid && 'product' === get_post_type( $pid ) ) ? get_the_title( $pid ) : '';
 		$funnel  = isset( $in['funnel'] ) ? sanitize_key( $in['funnel'] ) : '';
 		$defs    = self::definitions();
-		$flabel  = isset( $defs[ $funnel ] ) ? $defs[ $funnel ]['label'] : '';
+		$flabel  = isset( $defs[ $funnel ] ) ? $defs[ $funnel ]['label'] : ( 'site' === $funnel ? __( 'Website (product page / WhatsApp button)', 'tabarak-core' ) : '' );
 		$data    = array(
 			'ref'      => $ref,
 			'name'     => $name,

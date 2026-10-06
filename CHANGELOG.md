@@ -2,6 +2,20 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Core 1.13.0 + Child 1.12.1 - WhatsApp order form on every page (2026-10-06)
+
+- **Every "Order on WhatsApp" button now opens a pop-up order form first.** This includes the button next to Add to cart on product pages and the floating green button on every page. It works the same way as the funnel pages. On phones the form opens as a bottom sheet.
+- **The form asks for:**
+  - Product (with photo, price and quantity), or "what would you like to order?" from the floating button.
+  - Name, plus a +254 phone number, which is validated.
+  - Delivery area and estate, or pickup at the shop.
+  - Payment method and whether installation is needed.
+  - An optional note.
+  - The customer's details are remembered for their next order.
+- **On "Send order on WhatsApp":** an order reference (TBK-YYMMDD-XXXX) is created, the order is saved under **Tabarak > Funnel Orders** with an email alert, and WhatsApp opens with the order written out neatly.
+- **Fallbacks:** if JavaScript is off, the buttons still open WhatsApp directly. Cart, checkout and My Account pages are unchanged.
+- **Speed:** the form's stylesheet loads without blocking the page, and its script is deferred.
+
 ## Tabarak Electronics Child 1.12.0 - Speed (2026-10-06)
 
 Measured on the live site before the change: server response time about 0.45-0.57 s (LiteSpeed cache working), and a homepage with 186 images, 159 srcsets, 20 scripts and 389 KB of HTML (35 KB compressed).

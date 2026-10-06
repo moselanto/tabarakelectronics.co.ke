@@ -510,7 +510,31 @@ if ( ! function_exists( 'tabarak_child_wa_after_cart' ) ) {
         global $product;
         $name = is_object( $product ) && method_exists( $product, 'get_name' ) ? $product->get_name() : '';
         $msg  = rawurlencode( sprintf( "Hello Tabarak, I would like to order: %s\n%s", $name, get_permalink() ) );
-        echo '<a class="tabarak-wa-btn" href="https://wa.me/' . esc_attr( $wa ) . '?text=' . $msg . '" target="_blank" rel="noopener nofollow"><span class="tabarak-wa-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 2a8 8 0 11-4.1 14.9l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 0112 4zm4.3 10.2c-.2-.1-1.3-.7-1.5-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 01-1.9-1.2 7.2 7.2 0 01-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 00-.7.3A2.8 2.8 0 006 8.6c0 1.6 1.2 3.2 1.3 3.4s2.3 3.6 5.7 5c.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.3.2-1.5z"/></svg></span>' . esc_html__( 'Order on WhatsApp', 'tabarak-electronics-child' ) . '</a>';
+        $data = '';
+        if ( is_object( $product ) && method_exists( $product, 'get_id' ) ) {
+            $price   = (float) wc_get_price_to_display( $product );
+            $regular = $product->is_on_sale() ? (float) wc_get_price_to_display( $product, array( 'price' => $product->get_regular_price() ) ) : 0;
+            $plain   = function ( $n ) { return 'KSh ' . number_format( (float) $n, 0, '.', ',' ); };
+            $brand   = '';
+            foreach ( array( 'product_brand', 'pwb-brand', 'yith_product_brand' ) as $tax ) {
+                if ( taxonomy_exists( $tax ) ) {
+                    $terms = get_the_terms( $product->get_id(), $tax );
+                    if ( $terms && ! is_wp_error( $terms ) ) {
+                        $brand = $terms[0]->name;
+                        break;
+                    }
+                }
+            }
+            $data = ' data-id="' . esc_attr( $product->get_id() ) . '"'
+                . ' data-name="' . esc_attr( $name ) . '"'
+                . ' data-price="' . esc_attr( $price > 0 ? $price : '' ) . '"'
+                . ' data-price-label="' . esc_attr( $price > 0 ? $plain( $price ) : __( 'Call for price', 'tabarak-electronics-child' ) ) . '"'
+                . ' data-regular="' . esc_attr( $regular > $price ? $plain( $regular ) : '' ) . '"'
+                . ' data-img="' . esc_url( (string) wp_get_attachment_image_url( $product->get_image_id(), 'woocommerce_thumbnail' ) ) . '"'
+                . ' data-brand="' . esc_attr( $brand ) . '"'
+                . ' data-url="' . esc_url( get_permalink( $product->get_id() ) ) . '"';
+        }
+        echo '<a class="tabarak-wa-btn js-tf-order" href="https://wa.me/' . esc_attr( $wa ) . '?text=' . $msg . '" target="_blank" rel="noopener nofollow"' . $data . '><span class="tabarak-wa-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 2a8 8 0 11-4.1 14.9l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 0112 4zm4.3 10.2c-.2-.1-1.3-.7-1.5-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 01-1.9-1.2 7.2 7.2 0 01-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 00-.7.3A2.8 2.8 0 006 8.6c0 1.6 1.2 3.2 1.3 3.4s2.3 3.6 5.7 5c.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.3.2-1.5z"/></svg></span>' . esc_html__( 'Order on WhatsApp', 'tabarak-electronics-child' ) . '</a>';
     }
 }
 add_action( 'woocommerce_after_add_to_cart_button', 'tabarak_child_wa_after_cart' );

@@ -361,3 +361,8 @@ html[data-theme="dark"] .tf-spot,html[data-theme="dark"] .tf-spot__body{backgrou
 html[data-theme="dark"] .tf-spot__name{color:#fff;}
 html[data-theme="dark"] .tf-spot__media{background:#fff;}
 html[data-theme="dark"] .tf-filterbar{background:#1f1a10;border-color:#4a3a14;color:#e7e9ee;}
+
+/* v1.13.0: the order pop-up works on every page, not only funnel pages */
+.tf-modal{--tf-accent:var(--t-accent,#f7a81b);--tf-accent-2:var(--t-accent-2,#ffbf3f);--tf-ink:#0e1116;--tf-muted:#5e6675;--tf-line:#e7e9ee;--tf-bg:#f5f6f9;--tf-wa:#25D366;color:var(--tf-ink);font-size:15px;line-height:1.45;}
+.tf-modal *,.tf-modal *::before,.tf-modal *::after{box-sizing:border-box;}
+.tf-modal .tf-btn{text-decoration:none;}

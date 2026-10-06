@@ -116,10 +116,10 @@
       L.push('*Quantity:* ' + qty);
       if (product.price && qty > 1) { L.push('*Total:* ' + money(product.price * qty)); }
     } else {
-      L.push('Hello Tabarak Electronics, please help me with the best price.');
+      L.push(T.label ? 'Hello Tabarak Electronics, please help me with the best price.' : 'Hello Tabarak Electronics, I would like to place an order.');
       L.push('');
       L.push('*Ref:* ' + ref);
-      L.push('*Category:* ' + (T.label || ''));
+      if (T.label) { L.push('*Category:* ' + T.label); }
       if (val(form, 'budget')) { L.push('*Budget:* ' + val(form, 'budget')); }
       if (val(form, 'need')) { L.push('*Looking for:* ' + val(form, 'need')); }
     }
@@ -135,6 +135,7 @@
     if (form.elements.install) { L.push('*Installation:* ' + (val(form, 'install') ? 'Yes please' : 'Not needed')); }
     if (val(form, 'notes')) { L.push('*Note:* ' + val(form, 'notes')); }
     if (product && product.url) { L.push(''); L.push(product.url); }
+    else if (!product && !T.label && T.pageUrl) { L.push(''); L.push(T.pageUrl); }
     else if (source === 'quote' && T.pageUrl) { L.push(''); L.push(T.pageUrl); }
     return L.join('\n');
   }
@@ -211,7 +212,7 @@
       modal.querySelector('.tf-modal__title').textContent = 'Complete your order';
     } else {
       pBox.hidden = true; gBox.hidden = false;
-      modal.querySelector('.tf-modal__title').textContent = 'Tell us what you need';
+      modal.querySelector('.tf-modal__title').textContent = T.label ? 'Tell us what you need' : 'What would you like to order?';
     }
     mForm.elements.qty.value = 1;
     mForm.hidden = false; mDone.hidden = true;
