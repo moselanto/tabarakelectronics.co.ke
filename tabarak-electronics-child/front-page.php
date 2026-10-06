@@ -52,7 +52,10 @@ $tabarak_slides = function_exists( 'tabarak_child_hero_slides' ) ? tabarak_child
                     <div class="tabarak-slider__track">
                         <?php foreach ( $tabarak_slides as $index => $slide ) : ?>
                             <div class="tabarak-slide<?php echo 0 === $index ? ' is-active' : ''; ?>">
-                                <div class="tabarak-slide__bg" style="background-image:url('<?php echo esc_url( $slide['img'] ); ?>');"></div>
+                                <div class="tabarak-slide__bg">
+                                    <?php $tabarak_ss = function_exists( 'tabarak_ux_hero_srcset' ) ? tabarak_ux_hero_srcset( $slide['img'] ) : ''; ?>
+                                    <img src="<?php echo esc_url( $slide['img'] ); ?>"<?php echo $tabarak_ss ? ' srcset="' . esc_attr( $tabarak_ss ) . '" sizes="(max-width: 767px) 100vw, 900px"' : ''; ?> alt="" width="1376" height="768" decoding="async" <?php echo 0 === $index ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
+                                </div>
                                 <div class="tabarak-slide__scrim"></div>
                                 <div class="tabarak-slide__inner">
                                     <span class="tabarak-slide__eyebrow"><?php esc_html_e( 'Tabarak Electronics', 'tabarak-electronics-child' ); ?></span>
@@ -134,10 +137,10 @@ $tabarak_slides = function_exists( 'tabarak_child_hero_slides' ) ? tabarak_child
 
     <?php
     if ( $tabarak_has_wc ) {
-        // New arrivals - 18 products, horizontal carousel.
+        // New arrivals - 12 products, horizontal carousel.
         tabarak_child_carousel(
             array(
-                'posts_per_page' => 18,
+                'posts_per_page' => 12,
                 'orderby'        => 'date',
                 'order'          => 'DESC',
             ),

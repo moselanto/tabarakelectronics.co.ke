@@ -2,6 +2,18 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Electronics Child 1.12.0 - Speed (2026-10-06)
+
+Measured on the live site before the change: server response time about 0.45-0.57 s (LiteSpeed cache working), and a homepage with 186 images, 159 srcsets, 20 scripts and 389 KB of HTML (35 KB compressed).
+
+- **Hero slider:** WebP images (68 KB instead of 119 KB on desktop, and a 25 KB 800px version for phones). The slides are now real `<img>` elements with `srcset`: the first loads at high priority with a responsive preload, and the other three are lazy.
+- **Product cards:** a `sizes` hint, so phones download the small thumbnail instead of the 300px one. Images use async decoding and a fixed square ratio, so there is no layout jump.
+- **Off-screen homepage rows, brands, call-to-action and footer:** the browser skips rendering them until you scroll near them (`content-visibility`), which makes the first paint much faster on phones.
+- **Variation-swatches plugin:** its CSS and JS, plus the WordPress API scripts it pulls in, no longer load on pages without variation swatches.
+- **Theme scripts:** load with `defer`.
+- **Product page:** the main product photo loads first at high priority.
+- **New arrivals:** reduced from 18 to 12 products.
+
 ## Security and anti-spam pass (2026-10-06) - Tabarak Core 1.12.1, Child 1.11.3
 
 Found during a live check of the site and a code review, and fixed:

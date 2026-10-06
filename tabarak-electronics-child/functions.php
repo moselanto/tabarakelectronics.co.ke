@@ -53,7 +53,7 @@ if ( ! function_exists( 'tabarak_child_product_card' ) ) {
         $thumb = get_the_post_thumbnail(
             $product_id,
             'woocommerce_thumbnail',
-            array( 'loading' => 'lazy', 'alt' => esc_attr( $product->get_name() ) )
+            array( 'loading' => 'lazy', 'decoding' => 'async', 'sizes' => '(max-width: 767px) 46vw, 240px', 'alt' => esc_attr( $product->get_name() ) )
         );
         if ( ! $thumb ) {
             $tabarak_ph = get_stylesheet_directory_uri() . '/assets/images/no-image.png';
@@ -165,10 +165,10 @@ if ( ! function_exists( 'tabarak_child_hero_slides' ) ) {
         $uri  = get_stylesheet_directory_uri() . '/assets/images/';
         $shop = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
         $defaults = array(
-            array( 'img' => $uri . 'hero-1.jpg', 'title' => __( 'Big screens, bigger savings', 'tabarak-electronics-child' ), 'text' => __( 'Premium 4K & QLED TVs with genuine warranty and fast delivery.', 'tabarak-electronics-child' ), 'link' => $shop ),
-            array( 'img' => $uri . 'hero-2.jpg', 'title' => __( 'Keep it cool, keep it fresh', 'tabarak-electronics-child' ), 'text' => __( 'Energy-smart refrigerators and freezers from the brands you trust.', 'tabarak-electronics-child' ), 'link' => $shop ),
-            array( 'img' => $uri . 'hero-3.jpg', 'title' => __( 'Laundry made easy', 'tabarak-electronics-child' ), 'text' => __( 'Washing machines and dryers built for busy Kenyan homes.', 'tabarak-electronics-child' ), 'link' => $shop ),
-            array( 'img' => $uri . 'hero-4.jpg', 'title' => __( 'Cook and blend in style', 'tabarak-electronics-child' ), 'text' => __( 'Microwaves, blenders and kitchen essentials at great prices.', 'tabarak-electronics-child' ), 'link' => $shop ),
+            array( 'img' => $uri . 'hero-1.webp', 'title' => __( 'Big screens, bigger savings', 'tabarak-electronics-child' ), 'text' => __( 'Premium 4K & QLED TVs with genuine warranty and fast delivery.', 'tabarak-electronics-child' ), 'link' => $shop ),
+            array( 'img' => $uri . 'hero-2.webp', 'title' => __( 'Keep it cool, keep it fresh', 'tabarak-electronics-child' ), 'text' => __( 'Energy-smart refrigerators and freezers from the brands you trust.', 'tabarak-electronics-child' ), 'link' => $shop ),
+            array( 'img' => $uri . 'hero-3.webp', 'title' => __( 'Laundry made easy', 'tabarak-electronics-child' ), 'text' => __( 'Washing machines and dryers built for busy Kenyan homes.', 'tabarak-electronics-child' ), 'link' => $shop ),
+            array( 'img' => $uri . 'hero-4.webp', 'title' => __( 'Cook and blend in style', 'tabarak-electronics-child' ), 'text' => __( 'Microwaves, blenders and kitchen essentials at great prices.', 'tabarak-electronics-child' ), 'link' => $shop ),
         );
         $slides = array();
         for ( $i = 1; $i <= 4; $i++ ) {
@@ -983,7 +983,12 @@ if ( function_exists( 'tabarak_child_perf_security' ) === false ) {
         if ( function_exists( 'tabarak_child_hero_slides' ) === false ) { return; }
         $slides = tabarak_child_hero_slides();
         if ( empty( $slides ) || empty( $slides[0]['img'] ) ) { return; }
-        echo '<link rel="preload" as="image" fetchpriority="high" href="' . esc_url( $slides[0]['img'] ) . '">';
+        $tabarak_srcset = function_exists( 'tabarak_ux_hero_srcset' ) ? tabarak_ux_hero_srcset( $slides[0]['img'] ) : '';
+        if ( $tabarak_srcset ) {
+            echo '<link rel="preload" as="image" fetchpriority="high" href="' . esc_url( $slides[0]['img'] ) . '" imagesrcset="' . esc_attr( $tabarak_srcset ) . '" imagesizes="(max-width: 767px) 100vw, 900px">';
+        } else {
+            echo '<link rel="preload" as="image" fetchpriority="high" href="' . esc_url( $slides[0]['img'] ) . '">';
+        }
     }, 1 );
 
     /* --- SEC 1: stop leaking WordPress version / editor discovery links --- */

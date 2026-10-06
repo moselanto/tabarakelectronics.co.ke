@@ -386,3 +386,8 @@ html[data-theme="dark"] .tux-emptycats a{background:#171b22;border-color:#252c38
 .tux-nav.main-navigation .tux-brandgrid li a:hover,.tux-nav.main-navigation .tux-dealgrid li a:hover{background:#fff;color:#0e1116;}
 html[data-theme="dark"] .tux-nav.main-navigation .tux-mega li a:hover,html[data-theme="dark"] .tux-nav.main-navigation .tux-drop li a:hover{background:#1c222c;color:var(--t-accent);}
 html[data-theme="dark"] .tux-nav.main-navigation .tux-dealgrid li a:hover{background:#171b22;color:#fff;}
+
+/* v1.12.0 speed */
+.tabarak-slide__bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+.tabarak-row,.tabarak-brands,.tabarak-cta-band,.site-footer{content-visibility:auto;contain-intrinsic-size:auto 460px;}
+.woocommerce ul.products li.product img,.tabarak-pcard__media img{aspect-ratio:1/1;object-fit:contain;}

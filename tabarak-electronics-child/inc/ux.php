@@ -741,3 +741,69 @@ unset( $tabarak_ux_hook );
 
 /* Make the reCAPTCHA badge sit above the mobile bottom bar instead of covering "Cart". */
 /* (handled in ux.css) */
+
+
+/* ------------------------------------------------------------------
+ * 8. Speed (v1.12.0)
+ * ------------------------------------------------------------------ */
+
+/** Responsive srcset for the bundled WebP hero slides (800w for phones, 1376w for desktop). */
+if ( ! function_exists( 'tabarak_ux_hero_srcset' ) ) {
+	function tabarak_ux_hero_srcset( $url ) {
+		if ( ! preg_match( '#/assets/images/hero-(\d)\.webp$#', (string) $url, $m ) ) {
+			return '';
+		}
+		$base = get_stylesheet_directory_uri() . '/assets/images/hero-' . $m[1];
+		return $base . '-800.webp 800w, ' . $base . '.webp 1376w';
+	}
+}
+
+/**
+ * Do not load the variation-swatches plugin (and the WordPress API scripts it
+ * pulls in) on pages that never show variation swatches.
+ */
+if ( ! function_exists( 'tabarak_ux_trim_assets' ) ) {
+	function tabarak_ux_trim_assets() {
+		if ( is_admin() || ( function_exists( 'is_product' ) && is_product() ) ) {
+			return;
+		}
+		$scripts = wp_scripts();
+		foreach ( (array) $scripts->queue as $handle ) {
+			$src = isset( $scripts->registered[ $handle ] ) ? (string) $scripts->registered[ $handle ]->src : '';
+			if ( false !== strpos( $src, '/woo-variation-swatches/' ) ) {
+				wp_dequeue_script( $handle );
+			}
+		}
+		$styles = wp_styles();
+		foreach ( (array) $styles->queue as $handle ) {
+			$src = isset( $styles->registered[ $handle ] ) ? (string) $styles->registered[ $handle ]->src : '';
+			if ( false !== strpos( $src, '/woo-variation-swatches/' ) ) {
+				wp_dequeue_style( $handle );
+			}
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'tabarak_ux_trim_assets', 999 );
+
+/** Our own scripts never block rendering. */
+if ( ! function_exists( 'tabarak_ux_defer_scripts' ) ) {
+	function tabarak_ux_defer_scripts() {
+		foreach ( array( 'tabarak-main', 'tabarak-shop', 'tabarak-ux' ) as $h ) {
+			if ( wp_script_is( $h, 'registered' ) ) {
+				wp_script_add_data( $h, 'strategy', 'defer' );
+			}
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'tabarak_ux_defer_scripts', 1000 );
+
+/** Main product photo on product pages: load first, at high priority. */
+if ( ! function_exists( 'tabarak_ux_gallery_priority' ) ) {
+	function tabarak_ux_gallery_priority( $attr ) {
+		$attr['fetchpriority'] = 'high';
+		$attr['loading']       = 'eager';
+		$attr['decoding']      = 'async';
+		return $attr;
+	}
+}
+add_filter( 'woocommerce_gallery_image_html_attachment_image_params', 'tabarak_ux_gallery_priority' );
