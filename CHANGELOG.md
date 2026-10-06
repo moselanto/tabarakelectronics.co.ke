@@ -2,6 +2,14 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Core 1.10.0 - Category sales funnels (2026-10-06)
+
+- 13 sales funnel pages for the biggest categories: `/lp-televisions/`, `/lp-refrigerators/`, `/lp-cookers/`, `/lp-washing/`, `/lp-cookware/`, `/lp-blenders/`, `/lp-microwaves/`, `/lp-irons/`, `/lp-kettles/`, `/lp-dispensers/`, `/lp-heaters/`, `/lp-hoods/` and `/lp-audio/`.
+- Each page is short and direct: a hero with a "From KSh" price, WhatsApp and call buttons, a trust bar, budget buttons, a *Top deals* grid with an *Order on WhatsApp* button on every product (the message is pre-filled with the product name, price and link), brand chips, 3 order steps, FAQs, a final call to action and a sticky Call / WhatsApp bar on mobile.
+- New admin screen **Tabarak > Sales Funnels**. For each funnel you can pick products with a WooCommerce product search (in your own order), switch auto-fill of empty slots on or off, set the number of products, headline, sub-headline, promo bar and hero image, budget buttons and extra FAQs, and turn the page on or off.
+- Adds ItemList and FAQPage structured data, meta description and canonical (skipped when Yoast or Rank Math is active).
+- No pages or products are created. Settings live in one option, and product picks are cached for 15 minutes and cleared on save or product update.
+
 ## Tabarak Electronics Child 1.11.0 - UX overhaul (2026-10-06)
 
 ### Navigation
