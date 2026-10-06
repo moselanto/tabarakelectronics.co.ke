@@ -2,6 +2,14 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Electronics Child 1.11.1 - Menu fixes (2026-10-06)
+
+- Fixed menu items overlapping near *Audio* (quick links ran under the Delivery and Warranty links). The left part of the menu now shrinks cleanly and hides quick links on narrower screens instead of overlapping.
+- Delivery, Warranty, Returns, FAQs and Contact moved into one **Help** dropdown, which frees space in the bar.
+- **Hot Deals** is now a panel listing the category sales funnels (TV deals, Fridge deals and the rest) with category images, plus a *View all deals* button.
+- Quick links trimmed to TVs, Fridges, Cookers, Washing and Audio.
+- The menu cache clears when funnel settings are saved.
+
 ## Tabarak Core 1.10.0 - Category sales funnels (2026-10-06)
 
 - 13 sales funnel pages for the biggest categories: `/lp-televisions/`, `/lp-refrigerators/`, `/lp-cookers/`, `/lp-washing/`, `/lp-cookware/`, `/lp-blenders/`, `/lp-microwaves/`, `/lp-irons/`, `/lp-kettles/`, `/lp-dispensers/`, `/lp-heaters/`, `/lp-hoods/` and `/lp-audio/`.

@@ -115,12 +115,11 @@ if ( ! function_exists( 'tabarak_ux_quick_cats' ) ) {
 		return apply_filters(
 			'tabarak_ux_quick_cats',
 			array(
-				__( 'TVs', 'tabarak-electronics-child' )           => array( 'Televisions', 'Television', 'TVs' ),
-				__( 'Fridges', 'tabarak-electronics-child' )       => array( 'Refrigerators', 'Fridges' ),
-				__( 'Cookers', 'tabarak-electronics-child' )       => array( 'Cookers & Ovens', 'Cookers' ),
-				__( 'Washing', 'tabarak-electronics-child' )       => array( 'Washing Machines & Dryers', 'Washing Machines' ),
-				__( 'Audio', 'tabarak-electronics-child' )         => array( 'Audio & Home Theatre', 'Audio' ),
-				__( 'Small Kitchen', 'tabarak-electronics-child' ) => array( 'Blenders', 'Microwaves', 'Kettles' ),
+				__( 'TVs', 'tabarak-electronics-child' )      => array( 'Televisions', 'Television', 'TVs' ),
+				__( 'Fridges', 'tabarak-electronics-child' )  => array( 'Refrigerators', 'Fridges' ),
+				__( 'Cookers', 'tabarak-electronics-child' )  => array( 'Cookers & Ovens', 'Cookers' ),
+				__( 'Washing', 'tabarak-electronics-child' )  => array( 'Washing Machines & Dryers', 'Washing Machines' ),
+				__( 'Audio', 'tabarak-electronics-child' )    => array( 'Audio & Home Theatre', 'Audio' ),
 			)
 		);
 	}
@@ -129,7 +128,7 @@ if ( ! function_exists( 'tabarak_ux_quick_cats' ) ) {
 /** Build (and cache) the mega navigation HTML. */
 if ( ! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
 	function tabarak_ux_mega_nav_html() {
-		$key  = 'tabarak_ux_mega_nav_v1';
+		$key  = 'tabarak_ux_mega_nav_v2';
 		$html = get_transient( $key );
 		if ( is_string( $html ) && '' !== $html ) {
 			return $html;
@@ -225,7 +224,39 @@ if ( ! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
 			</li>
 			<?php endif; ?>
 
+			<?php $tabarak_deal_links = tabarak_ux_deal_links(); ?>
+			<?php if ( empty( $tabarak_deal_links ) ) : ?>
 			<li class="tux-nav__item"><a class="tux-nav__link tux-nav__link--deal" href="<?php echo esc_url( $deals ); ?>"><?php echo tabarak_ux_icon( 'fire' ); // phpcs:ignore ?><span><?php esc_html_e( 'Hot Deals', 'tabarak-electronics-child' ); ?></span></a></li>
+			<?php else : ?>
+			<li class="tux-nav__item tux-nav__item--mega">
+				<button type="button" class="tux-nav__trigger tux-nav__link--deal" aria-expanded="false" aria-controls="tux-mega-deals">
+					<?php echo tabarak_ux_icon( 'fire' ); // phpcs:ignore ?>
+					<span><?php esc_html_e( 'Hot Deals', 'tabarak-electronics-child' ); ?></span>
+					<?php echo tabarak_ux_icon( 'chev' ); // phpcs:ignore ?>
+				</button>
+				<div class="tux-mega tux-mega--deals" id="tux-mega-deals" hidden>
+					<div class="tux-mega__inner">
+						<div class="tux-mega__cols">
+							<p class="tux-mega__label"><?php esc_html_e( 'Deals by category', 'tabarak-electronics-child' ); ?></p>
+							<ul class="tux-dealgrid">
+								<?php foreach ( $tabarak_deal_links as $dl ) : ?>
+									<li><a href="<?php echo esc_url( $dl['url'] ); ?>">
+										<span class="tux-dealgrid__img"><?php echo $dl['img'] ? wp_get_attachment_image( $dl['img'], 'thumbnail', false, array( 'loading' => 'lazy', 'alt' => '' ) ) : tabarak_ux_icon( 'tag' ); // phpcs:ignore ?></span>
+										<span class="tux-dealgrid__txt"><strong><?php echo esc_html( $dl['label'] ); ?></strong><small><?php esc_html_e( 'See offers', 'tabarak-electronics-child' ); ?></small></span>
+									</a></li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
+						<aside class="tux-mega__promo">
+							<p class="tux-mega__eyebrow"><?php esc_html_e( 'On sale now', 'tabarak-electronics-child' ); ?></p>
+							<p class="tux-mega__title"><?php esc_html_e( 'Every discounted product in one place', 'tabarak-electronics-child' ); ?></p>
+							<p class="tux-mega__text"><?php esc_html_e( 'Genuine brands with warranty. Order online, by phone or on WhatsApp.', 'tabarak-electronics-child' ); ?></p>
+							<a class="tux-btn tux-btn--accent" href="<?php echo esc_url( $deals ); ?>"><?php esc_html_e( 'View all deals', 'tabarak-electronics-child' ); ?></a>
+						</aside>
+					</div>
+				</div>
+			</li>
+			<?php endif; ?>
 
 			<?php
 			foreach ( tabarak_ux_quick_cats() as $label => $names ) {
@@ -243,20 +274,56 @@ if ( ! function_exists( 'tabarak_ux_mega_nav_html' ) ) {
 	}
 }
 
-/** Right-hand helper links (not cached: cheap and page aware). */
+/** Funnel (sales landing page) links for the Hot Deals panel. */
+if ( ! function_exists( 'tabarak_ux_deal_links' ) ) {
+	function tabarak_ux_deal_links() {
+		$out = array();
+		if ( ! class_exists( 'Tabarak_Funnels' ) ) {
+			return $out;
+		}
+		foreach ( array_keys( Tabarak_Funnels::definitions() ) as $k ) {
+			$cfg = Tabarak_Funnels::get( $k );
+			if ( empty( $cfg ) || empty( $cfg['enabled'] ) ) {
+				continue;
+			}
+			$img   = 0;
+			$terms = Tabarak_Funnels::term_ids( $cfg );
+			if ( ! empty( $terms ) ) {
+				$img = (int) get_term_meta( (int) $terms[0], 'thumbnail_id', true );
+			}
+			$out[] = array(
+				'url'   => Tabarak_Funnels::url( $k ),
+				'label' => $cfg['label'],
+				'img'   => $img,
+			);
+		}
+		return $out;
+	}
+}
+
+/** Right side of the bar: Help dropdown + call to order. */
 if ( ! function_exists( 'tabarak_ux_nav_help' ) ) {
 	function tabarak_ux_nav_help() {
 		$links = array(
-			'delivery-installation' => array( __( 'Delivery', 'tabarak-electronics-child' ), 'truck' ),
-			'warranty-service'      => array( __( 'Warranty', 'tabarak-electronics-child' ), 'shield' ),
-			'contact-us'            => array( __( 'Contact', 'tabarak-electronics-child' ), 'chat' ),
+			'delivery-installation' => array( __( 'Delivery & Installation', 'tabarak-electronics-child' ), 'truck' ),
+			'warranty-service'      => array( __( 'Warranty & Service', 'tabarak-electronics-child' ), 'shield' ),
+			'returns-refund-policy' => array( __( 'Returns & Refunds', 'tabarak-electronics-child' ), 'box' ),
+			'faqs'                  => array( __( 'FAQs', 'tabarak-electronics-child' ), 'help' ),
+			'contact-us'            => array( __( 'Contact us', 'tabarak-electronics-child' ), 'chat' ),
 		);
-		echo '<ul class="tux-nav__help">';
+		$items = '';
 		foreach ( $links as $slug => $info ) {
 			$u = tabarak_ux_page_url( $slug );
 			if ( $u ) {
-				echo '<li><a href="' . esc_url( $u ) . '">' . tabarak_ux_icon( $info[1] ) . '<span>' . esc_html( $info[0] ) . '</span></a></li>'; // phpcs:ignore
+				$items .= '<li><a href="' . esc_url( $u ) . '">' . tabarak_ux_icon( $info[1] ) . '<span>' . esc_html( $info[0] ) . '</span></a></li>';
 			}
+		}
+		echo '<ul class="tux-nav__help">';
+		if ( '' !== $items ) {
+			echo '<li class="tux-nav__item tux-nav__item--mega tux-nav__item--drop">';
+			echo '<button type="button" class="tux-nav__trigger tux-nav__trigger--help" aria-expanded="false" aria-controls="tux-drop-help">' . tabarak_ux_icon( 'help' ) . '<span>' . esc_html__( 'Help', 'tabarak-electronics-child' ) . '</span>' . tabarak_ux_icon( 'chev' ) . '</button>'; // phpcs:ignore
+			echo '<div class="tux-drop" id="tux-drop-help" hidden><ul>' . $items . '</ul></div>'; // phpcs:ignore -- escaped above.
+			echo '</li>';
 		}
 		$phone = function_exists( 'tabarak_get_business' ) ? tabarak_get_business( 'phone' ) : '';
 		if ( $phone ) {
@@ -663,11 +730,11 @@ add_action( 'woocommerce_cart_is_empty', 'tabarak_ux_empty_cart_cats', 20 );
  * ------------------------------------------------------------------ */
 if ( ! function_exists( 'tabarak_ux_flush_caches' ) ) {
 	function tabarak_ux_flush_caches() {
-		delete_transient( 'tabarak_ux_mega_nav_v1' );
+		delete_transient( 'tabarak_ux_mega_nav_v2' );
 		delete_transient( 'tabarak_home_rows_html' );
 	}
 }
-foreach ( array( 'customize_save_after', 'created_product_cat', 'edited_product_cat', 'delete_product_cat', 'woocommerce_update_product', 'woocommerce_product_set_stock_status' ) as $tabarak_ux_hook ) {
+foreach ( array( 'update_option_tabarak_funnels', 'customize_save_after', 'created_product_cat', 'edited_product_cat', 'delete_product_cat', 'woocommerce_update_product', 'woocommerce_product_set_stock_status' ) as $tabarak_ux_hook ) {
 	add_action( $tabarak_ux_hook, 'tabarak_ux_flush_caches' );
 }
 unset( $tabarak_ux_hook );
