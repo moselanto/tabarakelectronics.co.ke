@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TABARAK_VERSION', '1.0.0' );
+define( 'TABARAK_VERSION', '1.2.1' );
 define( 'TABARAK_DIR', get_template_directory() );
 define( 'TABARAK_URI', get_template_directory_uri() );
 

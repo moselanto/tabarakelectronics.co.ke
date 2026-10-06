@@ -22,8 +22,6 @@ if ( ! function_exists( 'tabarak_enqueue_assets' ) ) {
             TABARAK_VERSION
         );
 
-        // Ensure the theme root style.css is registered for child themes.
-        wp_style_add_data( 'tabarak-main', 'rtl', 'replace' );
 
         wp_enqueue_script(
             'tabarak-main',
@@ -49,22 +47,4 @@ if ( ! function_exists( 'tabarak_enqueue_assets' ) ) {
 }
 add_action( 'wp_enqueue_scripts', 'tabarak_enqueue_assets' );
 
-if ( ! function_exists( 'tabarak_preconnect' ) ) {
-    /**
-     * Resource hints for performance.
-     *
-     * @param array  $urls          URLs to hint.
-     * @param string $relation_type Relation type.
-     * @return array
-     */
-    function tabarak_preconnect( $urls, $relation_type ) {
-        if ( 'preconnect' === $relation_type ) {
-            $urls[] = array(
-                'href'        => 'https://fonts.gstatic.com',
-                'crossorigin' => 'anonymous',
-            );
-        }
-        return $urls;
-    }
-}
-add_filter( 'wp_resource_hints', 'tabarak_preconnect', 10, 2 );
+// No web fonts are loaded (system font stack), so no font preconnect is needed.
