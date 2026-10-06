@@ -69,7 +69,12 @@ if ( ! function_exists( 'tabarak_child_product_card' ) ) {
         echo '<div class="tabarak-pcard__body">';
         echo '<a class="tabarak-pcard__title" href="' . esc_url( $link ) . '">' . esc_html( $product->get_name() ) . '</a>';
         echo '<div class="tabarak-pcard__price">' . wp_kses_post( $product->get_price_html() ) . '</div>';
+        echo '<div class="tabarak-pcard__actions">';
         echo '<a href="' . esc_url( $product->add_to_cart_url() ) . '" class="tabarak-pcard__btn button add_to_cart_button ajax_add_to_cart" data-product_id="' . esc_attr( $product_id ) . '" data-quantity="1" rel="nofollow">' . esc_html( $product->add_to_cart_text() ) . '</a>';
+        if ( function_exists( 'tabarak_ux_wa_quick' ) ) {
+            tabarak_ux_wa_quick( $product );
+        }
+        echo '</div>';
         echo '</div>';
         echo '</li>';
     }

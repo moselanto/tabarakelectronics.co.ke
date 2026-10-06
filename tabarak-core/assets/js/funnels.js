@@ -106,7 +106,13 @@
   function buildMessage(form, product, ref, source) {
     var L = [];
     var qty = Math.max(1, parseInt(val(form, 'qty'), 10) || 1);
-    if (product) {
+    if (product && product.cart) {
+      L.push('Hello Tabarak Electronics, I would like to order these items:');
+      L.push('');
+      L.push('*Order ref:* ' + ref);
+      (product.lines || []).forEach(function (ln) { L.push('- ' + ln); });
+      L.push('*Cart total:* ' + product.priceLabel);
+    } else if (product) {
       L.push('Hello Tabarak Electronics, I would like to order:');
       L.push('');
       L.push('*Order ref:* ' + ref);
@@ -159,6 +165,7 @@
     if (product) {
       fd.append('product_id', product.id || '');
       fd.append('price', product.priceLabel || '');
+      if (product.cart) { fd.append('cart_items', (product.lines || []).join('\n')); }
     }
     try {
       fetch(T.ajaxUrl, { method: 'POST', body: fd, credentials: 'same-origin', keepalive: true });
@@ -215,6 +222,8 @@
       modal.querySelector('.tf-modal__title').textContent = T.label ? 'Tell us what you need' : 'What would you like to order?';
     }
     mForm.elements.qty.value = 1;
+    var qBox = mForm.querySelector('.tf-qty');
+    if (qBox) { qBox.hidden = !!(product && product.cart); }
     mForm.hidden = false; mDone.hidden = true;
     setProgress(1);
     prefill(mForm);
@@ -275,6 +284,11 @@
         brand: btn.getAttribute('data-brand') || '',
         url: btn.getAttribute('data-url') || ''
       };
+      if (btn.getAttribute('data-cart')) {
+        product.cart = true;
+        product.price = 0;
+        try { product.lines = JSON.parse(btn.getAttribute('data-lines') || '[]'); } catch (x) { product.lines = []; }
+      }
     }
     if (openModal(product)) { e.preventDefault(); }
   });

@@ -1108,6 +1108,9 @@ final class Tabarak_Funnels {
 		}
 		$pid     = isset( $in['product_id'] ) ? absint( $in['product_id'] ) : 0;
 		$product = ( $pid && 'product' === get_post_type( $pid ) ) ? get_the_title( $pid ) : '';
+		if ( '' === $product && ! empty( $in['cart_items'] ) ) {
+			$product = mb_substr( sanitize_textarea_field( (string) $in['cart_items'] ), 0, 900 );
+		}
 		$funnel  = isset( $in['funnel'] ) ? sanitize_key( $in['funnel'] ) : '';
 		$defs    = self::definitions();
 		$flabel  = isset( $defs[ $funnel ] ) ? $defs[ $funnel ]['label'] : ( 'site' === $funnel ? __( 'Website (product page / WhatsApp button)', 'tabarak-core' ) : '' );

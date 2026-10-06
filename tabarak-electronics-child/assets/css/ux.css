@@ -391,3 +391,18 @@ html[data-theme="dark"] .tux-nav.main-navigation .tux-dealgrid li a:hover{backgr
 .tabarak-slide__bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 .tabarak-row,.tabarak-brands,.tabarak-cta-band,.site-footer{content-visibility:auto;contain-intrinsic-size:auto 460px;}
 .woocommerce ul.products li.product img,.tabarak-pcard__media img{aspect-ratio:1/1;object-fit:contain;}
+
+/* v1.13.0 WhatsApp ordering on cards and cart */
+.tabarak-pcard__actions{display:flex;gap:6px;align-items:stretch;}
+.tabarak-pcard__actions .tabarak-pcard__btn{flex:1 1 auto;min-width:0;}
+.tux-waq{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 12px;border-radius:10px;background:#25D366;color:#06341a !important;font-weight:800;font-size:13px;text-decoration:none !important;transition:background .15s ease,transform .15s ease;white-space:nowrap;}
+.tux-waq:hover{background:#1ebe5a;transform:translateY(-1px);}
+.tux-waq svg{flex:0 0 auto;}
+.tabarak-pcard__actions .tux-waq{flex:0 0 auto;padding:0 10px;}
+.tabarak-pcard__actions .tux-waq span{display:none;}
+ul.products li.product .tux-waq{display:flex;width:100%;margin-top:8px;}
+@media (max-width:480px){ul.products li.product .tux-waq{font-size:12px;min-height:36px;}}
+.tux-cartwa{margin-top:12px;}
+.tux-cartwa__btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:12px;background:#25D366;color:#06341a !important;font-weight:800;font-size:16px;text-decoration:none !important;}
+.tux-cartwa__btn:hover{background:#1ebe5a;}
+.tux-cartwa__note{margin:8px 0 0;font-size:12.5px;color:#5e6675;text-align:center;}

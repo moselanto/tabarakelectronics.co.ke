@@ -2,6 +2,12 @@
 
 All notable changes to the Tabarak Electronics platform.
 
+## Tabarak Core 1.13.1 + Child 1.13.0 - WhatsApp ordering on cards and cart (2026-10-06)
+
+- **Product cards:** every product card on the homepage, shop, category and search pages now has a green WhatsApp button. It opens the same order form for that product, with its photo, price and quantity.
+- **Cart page:** a new "Order this cart on WhatsApp" button under Proceed to checkout. The form lists every item with its quantity and subtotal, plus the cart total. On WhatsApp the order arrives as a neat list with a TBK reference, and it is saved under Funnel Orders with all the items.
+- **Fallbacks:** if JavaScript is off, every button still opens WhatsApp directly with the product or cart written out.
+
 ## Tabarak Core 1.13.0 + Child 1.12.1 - WhatsApp order form on every page (2026-10-06)
 
 - **Every "Order on WhatsApp" button now opens a pop-up order form first.** This includes the button next to Add to cart on product pages and the floating green button on every page. It works the same way as the funnel pages. On phones the form opens as a bottom sheet.
